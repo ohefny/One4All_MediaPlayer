@@ -5,23 +5,100 @@ import javafx.scene.media.Media;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Be The Change on 4/30/2016.
- */
 public class PlayList {
-    enum SORTTYPE{NAME,DURATION,ARTIST};
-    Media currentlyPlaying;
-    ArrayList<Media>list=new ArrayList<>();
-    boolean playing;
-    boolean shuffle;
-    boolean repeat;
-    int numOFMediaFiles;
-    int listDuration;
-    ArrayList<Integer>playingSeq=new ArrayList<>();
-    String Name="playlist";
+    enum SORTTYPE{NAME,DURATION,ARTIST}
+
+    private Media currentlyPlaying;
+    private ArrayList<Media>list=new ArrayList<>();
+    private boolean playing;
+    private boolean paused;
+    private boolean shuffle;
+    private boolean repeat;
+    private int numOFMediaFiles;
+    private int listDuration;
+    private ArrayList<Integer>playingSeq=new ArrayList<>();
+    private String Name="playlist";
+    public ArrayList<Media> getList() {
+        return list;
+    }
+
+    public void setList(ArrayList<Media> list) {
+        this.list = list;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public boolean isShuffle() {
+        return shuffle;
+    }
+
+    public void setShuffle(boolean shuffle) {
+        this.shuffle = shuffle;
+    }
+
+    public boolean isRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        this.repeat = repeat;
+    }
+
+    public int getNumOFMediaFiles() {
+        return numOFMediaFiles;
+    }
+
+    public void setNumOFMediaFiles(int numOFMediaFiles) {
+        this.numOFMediaFiles = numOFMediaFiles;
+    }
+
+    public int getListDuration() {
+        return listDuration;
+    }
+
+    public void setListDuration(int listDuration) {
+        this.listDuration = listDuration;
+    }
+
+    public ArrayList<Integer> getPlayingSeq() {
+        return playingSeq;
+    }
+
+    public void setPlayingSeq(ArrayList<Integer> playingSeq) {
+        this.playingSeq = playingSeq;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+
     void makeSequene(){}
     void Sort(SORTTYPE sorttype){}
-    void AddMedia(Media media){}
+    void addMedia(Media media){
+        clearList();
+        currentlyPlaying=media;
+        playing=true;
+        paused=false;
+    }
     void removeMedia(Media media){}
     Media getNext(){
         return null;
@@ -30,9 +107,9 @@ public class PlayList {
         return null;
     }
     Media getCurrentlyPlaying(){
-        return null;
+        return currentlyPlaying;
     }
-    void AddMediaCollection(List<Media> collection){}
+    void addMediaCollection(List<Media> collection){}
     void clearList(){}
     void changePlaying(Media media){}
 
