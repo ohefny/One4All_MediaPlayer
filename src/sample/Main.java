@@ -13,13 +13,13 @@ import java.util.Scanner;
 public class Main extends Application {
     private View view;
     private Controller controller;
-    private PlayList playList;
+    private PlayList mplayList;
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Hello World");
         Controller controller=new Controller(view,new PlayList());
         view=controller.getView();
-        playList=controller.getPlayList();
+        mplayList=controller.getPlayList();
         Scene scene=new Scene(view,500,500);
         primaryStage.setScene(scene);
         primaryStage.show();
