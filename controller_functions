@@ -1,0 +1,20 @@
+1. An open menu to load song/songs to the play list. User can open one song file or
+choose a directory with his/her favourite songs.
+2. Once songs are loaded first song start playing. The user can pause or choose to
+go forward or backward to reach certain song.
+3. A volume control slide
+4. A slide shows the time elapsed for the played song.
+5. Create a name and special icon for your player.
+6. create,edit and open playlist
+7. resume last played media
+8. drag and drop songs to the player
+9. play next media in the folder (automatic playlist)
+10. view all available lists
+11. shuffle playlist
+12. song repetition
+13. Edit player view
+14. keyboard shortcuts
+15. Help and about menus
+16. Search in playlist
+17. Sort playlist
+18. increase rate , decrease rate
