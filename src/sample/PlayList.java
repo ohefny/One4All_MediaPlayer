@@ -40,6 +40,7 @@ public class PlayList {
 
     public void setPaused(boolean paused) {
         this.paused = paused;
+        setPlaying(!paused);
     }
 
     public boolean isShuffle() {
@@ -91,13 +92,20 @@ public class PlayList {
     }
 
 
-    void makeSequene(){}
+    void makeSequene(){
+        currentlyPlaying=list.get(0);
+
+    }
     void Sort(SORTTYPE sorttype){}
-    void addMedia(Media media){
-        clearList();
-        currentlyPlaying=media;
-        playing=true;
-        paused=false;
+    void addMedia(Media media,boolean openAndPlay){
+        if(openAndPlay==true){
+            clearList();
+            currentlyPlaying=media;
+            playing=true;
+            paused=false;
+        }
+        list.add(media);
+
     }
     void removeMedia(Media media){}
     Media getNext(){
@@ -109,7 +117,10 @@ public class PlayList {
     Media getCurrentlyPlaying(){
         return currentlyPlaying;
     }
-    void addMediaCollection(List<Media> collection){}
+    void addMediaCollection(List<Media> collection){
+        list=(ArrayList)collection;
+
+    }
     void clearList(){}
     void changePlaying(Media media){}
 
