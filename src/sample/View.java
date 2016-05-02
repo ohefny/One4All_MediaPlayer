@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -49,5 +50,13 @@ public class View extends VBox {
 
     public void setButton(Button button) {
         this.button = button;
+    }
+    public void errorDialog(String Content,String Header){
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error!");
+        alert.setHeaderText(Header);
+        alert.setContentText(Content);
+        alert.showAndWait();
     }
 }

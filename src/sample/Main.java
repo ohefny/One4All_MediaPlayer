@@ -1,14 +1,9 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.util.Scanner;
+import sample.DataModel.PlayList;
 
 public class Main extends Application {
     private View view;

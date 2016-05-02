@@ -1,15 +1,29 @@
-package sample;
+package sample.DataModel;
 
+import javafx.beans.NamedArg;
+import javafx.collections.MapChangeListener;
 import javafx.scene.media.Media;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayList {
-    enum SORTTYPE{NAME,DURATION,ARTIST}
+     public enum SORTTYPE{DEFAULT,TITLE,YEAR,ARTIST,ALBUM}
 
-    private Media currentlyPlaying;
-    private ArrayList<Media>list=new ArrayList<>();
+    private SORTTYPE sorttype=SORTTYPE.DEFAULT;
+    private Audio currentlyPlaying;
+    private ArrayList<Audio>list=new ArrayList<>();
+
+    public int getCurrentlyPlayinIndex() {
+        return currentlyPlayinIndex;
+    }
+
+    public void setCurrentlyPlayinIndex(int currentlyPlayinIndex) {
+        this.currentlyPlayinIndex = currentlyPlayinIndex;
+        currentlyPlaying=list.get(currentlyPlayinIndex);
+    }
+
+    private int currentlyPlayinIndex;
     private boolean playing;
     private boolean paused;
     private boolean shuffle;
@@ -17,12 +31,13 @@ public class PlayList {
     private int numOFMediaFiles;
     private int listDuration;
     private ArrayList<Integer>playingSeq=new ArrayList<>();
+    //private ArrayList
     private String Name="playlist";
-    public ArrayList<Media> getList() {
+    public ArrayList<Audio> getList() {
         return list;
     }
 
-    public void setList(ArrayList<Media> list) {
+    public void setList(ArrayList<Audio> list) {
         this.list = list;
     }
 
@@ -90,14 +105,37 @@ public class PlayList {
     public void setName(String name) {
         Name = name;
     }
+    public SORTTYPE getSorttype() {
+        return sorttype;
+    }
+
+    public void setSorttype(SORTTYPE sorttype) {
+        this.sorttype = sorttype;
+    }
 
 
-    void makeSequene(){
+    public void makeSequene(){
         currentlyPlaying=list.get(0);
+        switch(sorttype){
+            case ARTIST:
+               list.sort(Audio.getArtistComprator());
+                break;
+            case TITLE:
+               list.sort(Audio.getTitleComprator());
+                break;
+            case YEAR:
+               list.sort(Audio.getYearComprator());
+                break;
+
+            case ALBUM:
+               list.sort(Audio.getAlbumComprator());
+               break;
+            default:
+        }
 
     }
-    void Sort(SORTTYPE sorttype){}
-    void addMedia(Media media,boolean openAndPlay){
+    //void Sort(SORTTYPE sorttype){}
+    public void addMedia(Audio media,boolean openAndPlay){
         if(openAndPlay==true){
             clearList();
             currentlyPlaying=media;
@@ -107,21 +145,29 @@ public class PlayList {
         list.add(media);
 
     }
-    void removeMedia(Media media){}
-    Media getNext(){
+    public void removeMedia(Media media){}
+    public Audio getNext(){
         return null;
     }
-    Media getPrevious(){
+    public Audio getPrevious(){
         return null;
     }
-    Media getCurrentlyPlaying(){
+    public Audio getCurrentlyPlaying(){
         return currentlyPlaying;
     }
-    void addMediaCollection(List<Media> collection){
-        list=(ArrayList)collection;
+    public void addMediaCollection(boolean isNewList,List<Audio> collection){
+        if(isNewList)
+            list = (ArrayList) collection;
+        else
+            list.addAll(collection);
+
+        makeSequene();
+
 
     }
-    void clearList(){}
-    void changePlaying(Media media){}
+    public void clearList(){}
+    //public void changePlaying(Media media){}
+
 
 }
+
