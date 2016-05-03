@@ -1,13 +1,13 @@
 1. An open menu to load song/songs to the play list. User can open one song file or
 choose a directory with his/her favourite songs.
-implemented:: false
-tested:: false
+implemented:: true
+tested:: true
 integrated:: false
 
 2. Once songs are loaded first song start playing. The user can pause or choose to
 go forward or backward to reach certain song.
-implemented:: false
-tested:: false
+implemented:: true
+tested:: true
 integrated:: false
 
 3. A volume control slide
@@ -51,8 +51,8 @@ tested:: false
 integrated:: false
 
 11. shuffle playlist
-implemented:: false
-tested:: false
+implemented:: true
+tested:: true
 integrated:: false
 
 12. song repetition
