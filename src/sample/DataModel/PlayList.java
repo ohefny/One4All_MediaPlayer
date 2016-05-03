@@ -4,8 +4,7 @@ import javafx.beans.NamedArg;
 import javafx.collections.MapChangeListener;
 import javafx.scene.media.Media;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class PlayList {
      public enum SORTTYPE{DEFAULT,TITLE,YEAR,ARTIST,ALBUM}
@@ -20,10 +19,10 @@ public class PlayList {
 
     public void setCurrentlyPlayinIndex(int currentlyPlayinIndex) {
         this.currentlyPlayinIndex = currentlyPlayinIndex;
-        currentlyPlaying=list.get(currentlyPlayinIndex);
+        currentlyPlaying=list.get(playingSeq.get(currentlyPlayinIndex));
     }
 
-    private int currentlyPlayinIndex;
+    private int currentlyPlayinIndex=0;
     private boolean playing;
     private boolean paused;
     private boolean shuffle;
@@ -64,6 +63,8 @@ public class PlayList {
 
     public void setShuffle(boolean shuffle) {
         this.shuffle = shuffle;
+        if(shuffle)
+            makeSequene(0);
     }
 
     public boolean isRepeat() {
@@ -114,8 +115,8 @@ public class PlayList {
     }
 
 
-    public void makeSequene(){
-        currentlyPlaying=list.get(0);
+    private void makeSequene(int starting){
+        //currentlyPlaying=list.get(0);
         switch(sorttype){
             case ARTIST:
                list.sort(Audio.getArtistComprator());
@@ -131,37 +132,78 @@ public class PlayList {
                list.sort(Audio.getAlbumComprator());
                break;
             default:
+                if(shuffle){
+                    if(starting!=0)
+                        playingSeq.addAll(shuffleSequence(starting));
+                    else
+                        playingSeq=shuffleSequence(0);
+                }
+                else{
+                    for(int i=starting;i<list.size();i++)
+                       playingSeq.add(i);
+
+                }
         }
 
     }
+
+    private ArrayList<Integer> shuffleSequence(int starting) {
+        ArrayList<Integer>ret=new ArrayList<>();
+        for(int i=starting;i<list.size();i++)
+            ret.add(i);
+        Collections.shuffle(ret,new Random(System.nanoTime()));
+        return ret;
+    }
+
     //void Sort(SORTTYPE sorttype){}
     public void addMedia(Audio media,boolean openAndPlay){
         if(openAndPlay==true){
             clearList();
             currentlyPlaying=media;
+            currentlyPlayinIndex=0;
             playing=true;
             paused=false;
         }
         list.add(media);
 
     }
-    public void removeMedia(Media media){}
+    public void removeMedia(Media media){
+
+    }
     public Audio getNext(){
+        if(currentlyPlayinIndex<list.size()){
+            currentlyPlayinIndex++;
+            currentlyPlaying=list.get(playingSeq.get(currentlyPlayinIndex));
+        }
+        else{
+            playing=false;
+        }
         return null;
     }
     public Audio getPrevious(){
         return null;
     }
     public Audio getCurrentlyPlaying(){
+        if(currentlyPlaying==null){
+            if(list.size()==0||currentlyPlayinIndex>=playingSeq.size())
+                return null;
+            else
+                currentlyPlaying=list.get(playingSeq.get(currentlyPlayinIndex));
+        }
         return currentlyPlaying;
     }
     public void addMediaCollection(boolean isNewList,List<Audio> collection){
-        if(isNewList)
+        int starting;
+        if(isNewList){
             list = (ArrayList) collection;
-        else
+            starting=0;
+        }
+        else{
+            starting=list.size();
             list.addAll(collection);
+        }
 
-        makeSequene();
+        makeSequene(starting);
 
 
     }

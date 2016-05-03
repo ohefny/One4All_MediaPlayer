@@ -14,12 +14,13 @@ public class Controller implements ViewActionsListener {
     private PlayList mPlaylist;
     private MediaPlayer mediaPlayer;
     private View mView;
+    private MediaEnd mediaEnd;
 
     public Controller(View view, PlayList playlist) {
         mView = new View(this);
         mPlaylist = playlist;
-        if (mPlaylist.getCurrentlyPlaying() != null)
-            mediaPlayer = new MediaPlayer(playlist.getCurrentlyPlaying().getMedia());
+        mediaEnd=new MediaEnd();
+        assignMediaToPlayer();
 
     }
 
@@ -42,7 +43,7 @@ public class Controller implements ViewActionsListener {
                   for (Audio audio : audios)
                       mView.getMediaDirTA().appendText(audio.getMedia().getSource() + System.lineSeparator());
                   mPlaylist.addMediaCollection(true,audios);
-                  mPlaylist.makeSequene();
+                  onShuffle();
                   assignMediaToPlayer();
 
     }
@@ -74,12 +75,13 @@ public class Controller implements ViewActionsListener {
     public void onSort(PlayList.SORTTYPE sorttype) {
         if(sorttype!=mPlaylist.getSorttype()){
             mPlaylist.setSorttype(PlayList.SORTTYPE.DEFAULT);
-            mPlaylist.makeSequene();
+          //  mPlaylist.makeSequene();
         }
     }
 
     @Override
     public void onShuffle() {
+        mPlaylist.setShuffle(!mPlaylist.isShuffle());
 
     }
 
@@ -131,6 +133,8 @@ public class Controller implements ViewActionsListener {
     }
 
     private void assignMediaToPlayer() {
+        if(mPlaylist.getCurrentlyPlaying()==null)
+            return;
         if (mediaPlayer == null)
             mediaPlayer = new MediaPlayer(mPlaylist.getCurrentlyPlaying().getMedia());
         else {
@@ -138,7 +142,16 @@ public class Controller implements ViewActionsListener {
             mediaPlayer = new MediaPlayer(mPlaylist.getCurrentlyPlaying().getMedia());
 
         }
+        mediaPlayer.setOnEndOfMedia(mediaEnd);
         mediaPlayer.play();
     }
-
+ class MediaEnd implements Runnable{
+     @Override
+     public void run() {
+         mPlaylist.getNext();
+         assignMediaToPlayer();
+         //tobeRemoved
+         mView.getText().appendText(System.lineSeparator()+"Now Playing ::: "+mPlaylist.getCurrentlyPlaying());
+     }
+ }
 }
