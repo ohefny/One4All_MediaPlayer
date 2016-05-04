@@ -19,7 +19,8 @@ interface ViewActionsListener {
     void onShuffle();
     void onIncreaseRate(float rate);
     void onDecreaseRate(float rate);
-
+    void onPlayNext();
+    void onPlayPrevious();
 
     void onDirOpen(File file);
 

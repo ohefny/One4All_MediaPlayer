@@ -1,7 +1,5 @@
 package sample;
 
-import javafx.application.Platform;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import sample.DataModel.Audio;
 import sample.DataModel.PlayList;
@@ -14,12 +12,12 @@ public class Controller implements ViewActionsListener {
     private PlayList mPlaylist;
     private MediaPlayer mediaPlayer;
     private View mView;
-    private MediaEnd mediaEnd;
+    private MediaEndListener mediaEndListener;
 
     public Controller(View view, PlayList playlist) {
         mView = new View(this);
         mPlaylist = playlist;
-        mediaEnd=new MediaEnd();
+        mediaEndListener =new MediaEndListener();
         assignMediaToPlayer();
 
     }
@@ -95,6 +93,16 @@ public class Controller implements ViewActionsListener {
 
     }
 
+    @Override
+    public void onPlayNext() {
+
+    }
+
+    @Override
+    public void onPlayPrevious() {
+
+    }
+
 
     public View getView() {
         return mView;
@@ -142,10 +150,11 @@ public class Controller implements ViewActionsListener {
             mediaPlayer = new MediaPlayer(mPlaylist.getCurrentlyPlaying().getMedia());
 
         }
-        mediaPlayer.setOnEndOfMedia(mediaEnd);
+        mediaPlayer.setOnEndOfMedia(mediaEndListener);
         mediaPlayer.play();
+        mView.getText().appendText(System.lineSeparator()+"Now Playing ::: "+mPlaylist.getCurrentlyPlaying());
     }
- class MediaEnd implements Runnable{
+ class MediaEndListener implements Runnable{
      @Override
      public void run() {
          mPlaylist.getNext();

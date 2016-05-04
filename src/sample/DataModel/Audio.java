@@ -8,11 +8,15 @@ import java.io.File;
 import java.util.Comparator;
 
 public class Audio{
+
+
+    private String fileName="NA";
     private String artist="NA";
     private String album="NA";
     private String year="NA";
     private String title="NA";
     private Media media;
+    private static String[] acceptableExtensions = new String[]{"mp3", "aiff", "wav", "mp4", "mpeg-4", "flv"};
     private MetadataListener metadataListener;
     public Media getMedia() {
         return media;
@@ -53,7 +57,9 @@ public class Audio{
     public void setYear(String year) {
         this.year = year;
     }
-
+    public String getFileName() {
+        return fileName;
+    }
     public Audio(Media media){
         this.media=media;
         this.metadataListener=new MetadataListener(this);
@@ -63,6 +69,12 @@ public class Audio{
         this.media=new Media(file.toURI().toString());
         this.metadataListener=new MetadataListener(this);
         this.media.getMetadata().addListener(metadataListener);
+        this.fileName=file.getName();
+        for(String str:acceptableExtensions)
+            if(file.getName().endsWith(str)){
+                fileName=fileName.substring(0,fileName.lastIndexOf(str)-1);
+                break;
+            }
 
     }
     public Audio(String artist, String album, String year, String title,Media media) {
@@ -98,7 +110,7 @@ public class Audio{
 
     @Override
     public String toString() {
-        return String.format("Artist:%s  Title:%s  Year:%s  Album:%s",artist,title,year,album)+"***" +media.getSource();
+        return String.format("Artist:%s  Title:%s  Year:%s  Album:%s",artist,title,year,album)+"***" +fileName;
     }
 }
 class MetadataListener implements MapChangeListener<String,Object> {
