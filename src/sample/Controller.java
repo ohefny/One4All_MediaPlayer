@@ -1,5 +1,6 @@
 package sample;
 
+import UI.DesignView;
 import javafx.scene.media.MediaPlayer;
 import sample.DataModel.Audio;
 import sample.DataModel.PlayList;
@@ -13,13 +14,13 @@ import java.util.*;
 public class Controller implements ViewActionsListener {
     private PlayList mPlaylist;
     private MediaPlayer mediaPlayer;
-    private View mView;
+    private DesignView designView;
     private MediaEndListener mediaEndListener;
     private double rate=1;
 
-    public Controller(View view, PlayList playlist) {
-        mView = new View(this);
-        mPlaylist = playlist;
+    public Controller() {
+        designView = new DesignView(this);
+        mPlaylist = new PlayList();
         mediaEndListener =new MediaEndListener();
         assignMediaToPlayer();
 
@@ -32,8 +33,8 @@ public class Controller implements ViewActionsListener {
             mediaPlayer.play();
         }
         else{
-          mView.errorDialog("Please choose one of these file formates" +
-                  "mp3,wav,aiff,mp4,mpeg-4,flv","Unsupported File");
+       //   mView.errorDialog("Please choose one of these file formates" +
+        //          "mp3,wav,aiff,mp4,mpeg-4,flv","Unsupported File");
         }
     }
 
@@ -80,8 +81,15 @@ public class Controller implements ViewActionsListener {
     }
 
     @Override
-    public void onLoadPlaylist(String listName) {
-        File file = new File("resources/abc.txt");
+    public void onLoadPlaylist(File listPath) {
+        try{
+       Scanner scanner=new Scanner(listPath);
+
+
+        }
+        catch (FileNotFoundException ex){
+
+        }
 
     }
 
@@ -181,8 +189,8 @@ public class Controller implements ViewActionsListener {
     }
 
 
-    public View getView() {
-        return mView;
+    public DesignView getDesignView() {
+        return designView;
     }
 
     public PlayList getPlayList() {
@@ -245,7 +253,7 @@ public class Controller implements ViewActionsListener {
          mPlaylist.getNext();
          assignMediaToPlayer();
          //tobeRemoved
-         mView.getText().appendText(System.lineSeparator()+"Now Playing ::: "+mPlaylist.getCurrentlyPlaying());
+         //mView.getText().appendText(System.lineSeparator()+"Now Playing ::: "+mPlaylist.getCurrentlyPlaying());
      }
  }
 }

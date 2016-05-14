@@ -12,26 +12,26 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import sample.*;
 
 
 public class DesignView {
 
     Stage primaryStage;
     Scene scene;
+    private ViewActionsListener viewActionsListener;
 
+    private BorderPane primaryPane;
 
-    private BorderPane primaryPane ;
-
-    private HBox upPane ;
-    private Button musicButton , listButton , openButton ;
-    private StackPane centerPane ;
+    private HBox upPane;
+    private Button musicButton, listButton, openButton;
+    private StackPane centerPane;
     private VBox mainPane;
-    private HBox firstPiecePane ;
-    private HBox secondPiecePane ;
+    private HBox firstPiecePane;
+    private HBox secondPiecePane;
     private GridPane thirdPiecePane;
 
-    private  BorderPane  playListPane;
-
+    private BorderPane playListPane;
 
 
     private Button previous, play, pause, next;
@@ -41,33 +41,33 @@ public class DesignView {
 
     private Slider durationBar, volumeBar;
 
-    private   int currentDuration , fullDuration , currentVolume;
+    private int currentDuration, fullDuration, currentVolume;
 
-    private Label nowPlayingSongName , nowPlayingAlbumName , nowPlayingArtistName ;
-    private  Label duration , volume;
+    private Label nowPlayingSongName, nowPlayingAlbumName, nowPlayingArtistName;
+    private Label duration, volume;
     private ImageView albumPic;
 
 
+    private StackPane picPane;
+    private VBox songDataPane;
 
-    private StackPane picPane ;
-    private VBox songDataPane ;
-
-    private VBox slidersPane ;
-    private VBox labelsPane ;
-
-
+    private VBox slidersPane;
+    private VBox labelsPane;
 
 
     private HBox downOfPlaylistPane;
-    private Button addToPlayListButton , savePlayListButton , shufflePlayListButton , deleteButton;
+    private Button addToPlayListButton, savePlayListButton, shufflePlayListButton, deleteButton;
 
-    private StackPane playListViewPane ;
+    private StackPane playListViewPane;
 
-    public DesignView(){
+    public DesignView(ViewActionsListener viewActionsListener) {
+
+        this.viewActionsListener = viewActionsListener;
         initializePrimaryPane();
+        initializeConrolersActions();
     }
 
-    private void initializePrimaryPane(){
+    private void initializePrimaryPane() {
         initializeUpPane();
         initializeCenterPane();
         primaryPane = new BorderPane();
@@ -75,30 +75,28 @@ public class DesignView {
         primaryPane.setTop(upPane);
 
     }
-    private void initializeUpPane(){
+
+    private void initializeUpPane() {
 
 
-        musicButton = new Button("" , new ImageView("icons/music.png"));
+        musicButton = new Button("", new ImageView("icons/music.png"));
         musicButton.setStyle("-fx-background-color: black;");
-        listButton= new Button("" , new ImageView("icons/list.png") );
+        listButton = new Button("", new ImageView("icons/list.png"));
         listButton.setStyle("-fx-background-color: black;");
-        openButton = new Button("" , new ImageView("icons/file.png"));
+        openButton = new Button("", new ImageView("icons/file.png"));
         openButton.setStyle("-fx-background-color: black;");
         upPane = new HBox(5);
 
-        upPane.setPadding(new Insets(5,15,5,280));
+        upPane.setPadding(new Insets(5, 15, 5, 280));
 
-        upPane.getChildren().addAll(openButton , musicButton , listButton );
+        upPane.getChildren().addAll(openButton, musicButton, listButton);
         upPane.setStyle("-fx-background-color: black;");
         upPane.setStyle("-fx-background-color: black;");
-
-
-
 
 
     }
 
-    private void initializeCenterPane(){
+    private void initializeCenterPane() {
         initializeMainPane();
         initializePlayListPane();
         centerPane = new StackPane();
@@ -108,21 +106,23 @@ public class DesignView {
         centerPane.getChildren().add(mainPane);
 
     }
-    private void initializeMainPane(){
+
+    private void initializeMainPane() {
         mainPane = new VBox(10);
         initializeConrolers();
         initializeLabels();
         initializeFirstPiece();
         initializeSecondPiece();
         initializeThirdPiece();
-        mainPane.getChildren().addAll(firstPiecePane , secondPiecePane , thirdPiecePane);
+        mainPane.getChildren().addAll(firstPiecePane, secondPiecePane, thirdPiecePane);
         mainPane.setPadding(new Insets(10, 10, 10, 10));
         mainPane.setStyle("-fx-border-color: white ; -fx-background-color: black;");
 
 
     }
-    private void initializeConrolers(){
-        previous = new Button("",new ImageView("icons/pre.png"));
+
+    private void initializeConrolers() {
+        previous = new Button("", new ImageView("icons/pre.png"));
         previous.setStyle(
                 "-fx-background-radius: 1000em; " +
                         "-fx-min-width: 64px; " +
@@ -131,7 +131,7 @@ public class DesignView {
                         "-fx-max-height: 64px;"
         );
 
-        play = new Button("",new ImageView("icons/play.png"));
+        play = new Button("", new ImageView("icons/play.png"));
         play.setStyle(
                 "-fx-background-radius: 1000em; " +
                         "-fx-min-width: 64px; " +
@@ -141,8 +141,7 @@ public class DesignView {
         );
 
 
-
-        pause = new Button("",new ImageView("icons/pause.png"));
+        pause = new Button("", new ImageView("icons/pause.png"));
         pause.setStyle(
                 "-fx-background-radius: 1000em; " +
                         "-fx-min-width: 64px; " +
@@ -152,8 +151,7 @@ public class DesignView {
         );
 
 
-
-        next = new Button("",new ImageView("icons/next.png"));
+        next = new Button("", new ImageView("icons/next.png"));
         next.setStyle(
                 "-fx-background-radius: 1000em; " +
                         "-fx-min-width: 64px; " +
@@ -165,65 +163,70 @@ public class DesignView {
 
         nowPlayingSongName = new Label(nowPlaying);
     }
-    private void initializeLabels(){
+
+    private void initializeLabels() {
         nowPlayingSongName = new Label(nowPlaying);
         nowPlayingSongName.setFont(Font.font("Times New Roman",
                 FontWeight.BOLD, FontPosture.REGULAR, 32));
 
-        nowPlayingAlbumName=new Label(albumName);
+        nowPlayingAlbumName = new Label(albumName);
         nowPlayingAlbumName.setFont(Font.font("Times New Roman",
                 FontWeight.LIGHT, FontPosture.REGULAR, 22));
 
 
-        nowPlayingArtistName=new Label(artist);
+        nowPlayingArtistName = new Label(artist);
         nowPlayingArtistName.setFont(Font.font("Times New Roman",
                 FontWeight.LIGHT, FontPosture.REGULAR, 22));
 
 
     }
-    private void initializeFirstPiece(){
+
+    private void initializeFirstPiece() {
         firstPiecePane = new HBox(10);
         picPane = new StackPane();
         songDataPane = new VBox(10);
-        albumPic=new ImageView("icons/default.jpg");
+        albumPic = new ImageView("icons/default.jpg");
         picPane.getChildren().add(albumPic);
-        songDataPane.getChildren().addAll(nowPlayingSongName , nowPlayingAlbumName , nowPlayingArtistName );
+        songDataPane.getChildren().addAll(nowPlayingSongName, nowPlayingAlbumName, nowPlayingArtistName);
 
-        firstPiecePane.getChildren().addAll(picPane,songDataPane);
+        firstPiecePane.getChildren().addAll(picPane, songDataPane);
         firstPiecePane.setPadding(new Insets(20, 15, 10, 10));
 
     }
-    private void initializeSecondPiece(){
+
+    private void initializeSecondPiece() {
         secondPiecePane = new HBox(10);
-        secondPiecePane.getChildren().addAll(previous , play , pause , next);
+        secondPiecePane.getChildren().addAll(previous, play, pause, next);
         //secondPiece.setPadding(new Insets(10, 15, 10, 30));
         secondPiecePane.setAlignment(Pos.CENTER);
 
     }
-    private void initializeThirdPiece(){
+
+    private void initializeThirdPiece() {
         thirdPiecePane = new GridPane();
-        durationBar = new Slider(0 , fullDuration , currentDuration);
+        durationBar = new Slider(0, 100, 0);
         durationBar.setPrefWidth(200);
-        volumeBar = new Slider(0 , 100 , 50);
+        volumeBar = new Slider(0, 100, 50);
+
         volumeBar.setPrefWidth(200);
 
         slidersPane = new VBox(7);
         labelsPane = new VBox(3);
-        slidersPane.getChildren().addAll(durationBar,volumeBar);
+        slidersPane.getChildren().addAll(durationBar, volumeBar);
 
 
         duration = new Label(Integer.toString(currentDuration) + " / " + Integer.toString(fullDuration));
-        volume =new Label("Volume: "+Integer.toString(currentVolume) ) ;
-        labelsPane.getChildren().addAll( duration , volume );
+        volume = new Label("Volume: " + Integer.toString(currentVolume));
+        labelsPane.getChildren().addAll(duration, volume);
 
-        thirdPiecePane.add(labelsPane , 0 , 0);
-        thirdPiecePane.add(slidersPane , 1 , 0);
+        thirdPiecePane.add(labelsPane, 0, 0);
+        thirdPiecePane.add(slidersPane, 1, 0);
         thirdPiecePane.setHgap(30);
         thirdPiecePane.setPadding(new Insets(10, 0, 10, 10));
 
     }
 
-    private void initializePlayListPane(){
+    private void initializePlayListPane() {
         initializePlayListViewPane();
         initializedownOfPlaylistPane();
 
@@ -235,36 +238,60 @@ public class DesignView {
         playListPane.setBottom(downOfPlaylistPane);
 
     }
-    private void initializePlayListViewPane(){
+
+    private void initializePlayListViewPane() {
         playListViewPane = new StackPane();
         //playListViewPane.setPadding(new Insets(10,10,10,10));
         playListViewPane.setStyle("-fx-border-color: white;  -fx-background-color: black;");
     }
-    private void initializedownOfPlaylistPane(){
-        addToPlayListButton = new Button("" , new ImageView("icons/add.png"));
+
+    private void initializedownOfPlaylistPane() {
+        addToPlayListButton = new Button("", new ImageView("icons/add.png"));
         addToPlayListButton.setStyle(" -fx-background-color: black;");
 
-        savePlayListButton = new Button("" , new ImageView("icons/save.png"));
+        savePlayListButton = new Button("", new ImageView("icons/save.png"));
         savePlayListButton.setStyle(" -fx-background-color: black;");
 
-        shufflePlayListButton = new Button("" , new ImageView("icons/shuffle.png"));
+        shufflePlayListButton = new Button("", new ImageView("icons/shuffle.png"));
         shufflePlayListButton.setStyle(" -fx-background-color: black;");
 
-        deleteButton = new Button("" , new ImageView("icons/delete.png"));
+        deleteButton = new Button("", new ImageView("icons/delete.png"));
         deleteButton.setStyle(" -fx-background-color: black;");
 
         downOfPlaylistPane = new HBox(0);
         downOfPlaylistPane.setStyle("-fx-border-color: white;  -fx-background-color: black;");
-        downOfPlaylistPane.setPadding(new Insets(2,5,2,215));
-        downOfPlaylistPane.getChildren().addAll(addToPlayListButton,deleteButton , savePlayListButton , shufflePlayListButton );
+        downOfPlaylistPane.setPadding(new Insets(2, 5, 2, 215));
+        downOfPlaylistPane.getChildren().addAll(addToPlayListButton, deleteButton, savePlayListButton, shufflePlayListButton);
 
 
     }
 
+    private void initializeConrolersActions() {
+        getMusicButton().setOnAction(e -> {
+            getMusicButton().setStyle("-fx-border-color: white; ");
+            getListButton().setStyle("-fx-background-color: black;");
+            getCenterPane().getChildren().remove(getPlayListPane());
 
-    public void show(){
+            getCenterPane().getChildren().add(getMainPane());
+        });
+        getListButton().setOnAction(e -> {
+            getListButton().setStyle("-fx-border-color: white; ");
+            getMusicButton().setStyle("-fx-background-color: black;");
+            getCenterPane().getChildren().remove(getMainPane());
 
-        scene = new Scene(primaryPane , 450 ,450);
+            getCenterPane().getChildren().add(getPlayListPane());
+        });
+        previous.setOnAction(event -> viewActionsListener.onPlayPrevious());
+        play.setOnAction(event -> viewActionsListener.onPlay());
+        pause.setOnAction(event -> viewActionsListener.onPause());
+        next.setOnAction(event -> viewActionsListener.onPlayNext());
+
+
+    }
+
+    public void show() {
+
+        scene = new Scene(primaryPane, 450, 450);
         primaryStage = new Stage();
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -433,6 +460,7 @@ public class DesignView {
     }
 
     public Slider getDurationBar() {
+
         return durationBar;
     }
 
@@ -591,8 +619,6 @@ public class DesignView {
     public void setShufflePlayListButton(Button shufflePlayListButton) {
         this.shufflePlayListButton = shufflePlayListButton;
     }
-
-
 
 
     public StackPane getPlayListViewPane() {

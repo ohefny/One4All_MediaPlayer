@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 
-interface ViewActionsListener {
+public interface ViewActionsListener {
     void onMediaOpen(File file);
 
     void onPause();
@@ -29,6 +29,6 @@ interface ViewActionsListener {
    // void onMediasAdded(List<File> list);
     void onDragDrop(File file,boolean playlistIsOn);
     void onSavePlaylist() ;
-    void onLoadPlaylist(String listName);
+    void onLoadPlaylist(File listPath);
 
 }
