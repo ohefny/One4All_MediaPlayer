@@ -6,6 +6,8 @@ import sample.DataModel.PlayList;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Controller implements ViewActionsListener {
@@ -13,6 +15,7 @@ public class Controller implements ViewActionsListener {
     private MediaPlayer mediaPlayer;
     private View mView;
     private MediaEndListener mediaEndListener;
+    private double rate=1;
 
     public Controller(View view, PlayList playlist) {
         mView = new View(this);
@@ -38,8 +41,6 @@ public class Controller implements ViewActionsListener {
     @Override
     public void onDirOpen(File file) {
                   List<Audio> audios = getMediaFromDir(file);
-                  for (Audio audio : audios)
-                      mView.getMediaDirTA().appendText(audio.getMedia().getSource() + System.lineSeparator());
                   mPlaylist.addMediaCollection(true,audios);
                   onShuffle();
                   assignMediaToPlayer();
@@ -47,20 +48,74 @@ public class Controller implements ViewActionsListener {
     }
 
     @Override
+    public void onMediaAdded(File file) {
+        File[] list=file.listFiles( getFileFilter());
+        mPlaylist.addMediaCollection(false,getAudiosFromFiles(list));
+    }
+
+    @Override
+    public void onDragDrop(File file, boolean playlistIsOn) {
+
+    }
+
+    @Override
+    public void onSavePlaylist() {
+        File file;
+        PrintWriter printWriter;
+
+        if(mPlaylist.getPlayListPath()!=null){
+            file=new File(mPlaylist.getPlayListPath().getPath());
+            try{
+            printWriter=new PrintWriter(file);
+            for(Audio audio:mPlaylist.getList())
+                printWriter.println(audio.getPath());
+            }catch (FileNotFoundException ex){
+
+            }
+
+        }
+        else{
+            //open dir chooser dialog
+        }
+    }
+
+    @Override
+    public void onLoadPlaylist(String listName) {
+        File file = new File("resources/abc.txt");
+
+    }
+
+    @Override
     public void onPause() {
         if (mediaPlayer != null && mPlaylist.isPlaying()) {
             mediaPlayer.pause();
-
+            mPlaylist.setPaused(false);
         }
     }
 
     @Override
     public void onPlay() {
+        if(mPlaylist.isPlaying())return;
+        if(mPlaylist.isPaused()){
+            if(mediaPlayer==null)
+                assignMediaToPlayer();
+            else
+                mediaPlayer.play();
+            mPlaylist.setPaused(false);
 
+
+        }
+        else
+            assignMediaToPlayer();
     }
 
     @Override
     public void onStop() {
+        if(mediaPlayer==null)return;
+        else{
+            mediaPlayer.stop();
+            mPlaylist.setPlaying(false);
+        }
 
     }
 
@@ -84,23 +139,45 @@ public class Controller implements ViewActionsListener {
     }
 
     @Override
-    public void onIncreaseRate(float rate) {
+    public void onIncreaseRate() {
 
+        rate+=.5;
+        if(mediaPlayer!=null)
+            mediaPlayer.setRate(rate);
     }
 
     @Override
-    public void onDecreaseRate(float rate) {
+    public void onDecreaseRate() {
+
+        rate-=.5;
+        if(mediaPlayer!=null)
+            mediaPlayer.setRate(rate);
 
     }
 
     @Override
     public void onPlayNext() {
+        if(mediaPlayer==null){
+          assignMediaToPlayer();
+        }
+        else{
+              mPlaylist.getNext();
+              assignMediaToPlayer();
+
+        }
 
     }
 
     @Override
     public void onPlayPrevious() {
+        if(mediaPlayer==null){
+            assignMediaToPlayer();
+        }
+        else{
+            mPlaylist.getPrevious();
+            assignMediaToPlayer();
 
+        }
     }
 
 
@@ -116,7 +193,14 @@ public class Controller implements ViewActionsListener {
         return new Media(file.toURI().toString());
 
     }*/
+   public static List<Audio> getAudiosFromFiles(File[]list){
+       List<Audio>audios=new ArrayList<>();
+       for(File file:list){
+           audios.add(new Audio(file));
+       }
+       return audios;
 
+   }
     public static FileFilter getFileFilter() {
         String[] acceptableExtensions = new String[]{"mp3", "aiff", "wav", "mp4", "mpeg-4", "flv"};
         return new FileFilter() {
@@ -150,9 +234,10 @@ public class Controller implements ViewActionsListener {
             mediaPlayer = new MediaPlayer(mPlaylist.getCurrentlyPlaying().getMedia());
 
         }
+        mPlaylist.setPlaying(true);
         mediaPlayer.setOnEndOfMedia(mediaEndListener);
         mediaPlayer.play();
-        mView.getText().appendText(System.lineSeparator()+"Now Playing ::: "+mPlaylist.getCurrentlyPlaying());
+     //   mView.getText().appendText(System.lineSeparator()+"Now Playing ::: "+mPlaylist.getCurrentlyPlaying());
     }
  class MediaEndListener implements Runnable{
      @Override

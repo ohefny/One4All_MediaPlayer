@@ -4,6 +4,7 @@ import javafx.beans.NamedArg;
 import javafx.collections.MapChangeListener;
 import javafx.scene.media.Media;
 
+import java.io.File;
 import java.util.*;
 
 public class PlayList {
@@ -12,16 +13,6 @@ public class PlayList {
     private SORTTYPE sorttype=SORTTYPE.DEFAULT;
     private Audio currentlyPlaying;
     private ArrayList<Audio>list=new ArrayList<>();
-
-    public int getCurrentlyPlayinIndex() {
-        return currentlyPlayinIndex;
-    }
-
-    public void setCurrentlyPlayinIndex(int currentlyPlayinIndex) {
-        this.currentlyPlayinIndex = currentlyPlayinIndex;
-        currentlyPlaying=list.get(playingSeq.get(currentlyPlayinIndex));
-    }
-
     private int currentlyPlayinIndex=0;
     private boolean playing;
     private boolean paused;
@@ -32,6 +23,16 @@ public class PlayList {
     private ArrayList<Integer>playingSeq=new ArrayList<>();
     //private ArrayList
     private String Name="playlist";
+
+    public File getPlayListPath() {
+        return playListPath;
+    }
+
+    public void setPlayListPath(File playListPath) {
+        this.playListPath = playListPath;
+    }
+
+    private File playListPath;
     public ArrayList<Audio> getList() {
         return list;
     }
@@ -118,12 +119,12 @@ public class PlayList {
     private void makeSequene(int starting){
         //currentlyPlaying=list.get(0);
         switch(sorttype){
-            case ARTIST:
-               list.sort(Audio.getArtistComprator());
-                break;
-            case TITLE:
-               list.sort(Audio.getTitleComprator());
-                break;
+                case ARTIST:
+                    list.sort(Audio.getArtistComprator());
+                    break;
+                case TITLE:
+                    list.sort(Audio.getTitleComprator());
+                    break;
             case YEAR:
                list.sort(Audio.getYearComprator());
                 break;
@@ -170,18 +171,29 @@ public class PlayList {
     public void removeMedia(Media media){
 
     }
-    public Audio getNext(){
-        if(currentlyPlayinIndex<list.size()){
-            currentlyPlayinIndex++;
-            currentlyPlaying=list.get(playingSeq.get(currentlyPlayinIndex));
+    public void getNext(){
+        if(list.size()==0)return;
+        if(currentlyPlayinIndex==list.size()-1){
+            currentlyPlayinIndex=0;
         }
         else{
-            playing=false;
+            currentlyPlayinIndex++;
         }
-        return null;
+        currentlyPlaying=list.get(playingSeq.get(currentlyPlayinIndex));
+
+
     }
-    public Audio getPrevious(){
-        return null;
+    public void getPrevious(){
+       // return null;
+        if(list.size()==0)return;
+        if(currentlyPlayinIndex>0) {
+            currentlyPlayinIndex--;
+        }
+        else{
+            currentlyPlayinIndex=list.size()-1;
+        }
+            currentlyPlaying=list.get(playingSeq.get(currentlyPlayinIndex));
+
     }
     public Audio getCurrentlyPlaying(){
         if(currentlyPlaying==null){
@@ -208,6 +220,15 @@ public class PlayList {
 
     }
     public void clearList(){}
+
+    public int getCurrentlyPlayinIndex() {
+        return currentlyPlayinIndex;
+    }
+
+    public void setCurrentlyPlayinIndex(int currentlyPlayinIndex) {
+        this.currentlyPlayinIndex = currentlyPlayinIndex;
+        currentlyPlaying=list.get(playingSeq.get(currentlyPlayinIndex));
+    }
     //public void changePlaying(Media media){}
 
 

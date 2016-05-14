@@ -15,6 +15,10 @@ public class Audio{
     private String album="NA";
     private String year="NA";
     private String title="NA";
+
+
+
+    private String path="NA";
     private Media media;
     private static String[] acceptableExtensions = new String[]{"mp3", "aiff", "wav", "mp4", "mpeg-4", "flv"};
     private MetadataListener metadataListener;
@@ -53,7 +57,9 @@ public class Audio{
     public String getYear() {
         return year;
     }
-
+    public String getPath() {
+        return path;
+    }
     public void setYear(String year) {
         this.year = year;
     }
@@ -70,6 +76,7 @@ public class Audio{
         this.metadataListener=new MetadataListener(this);
         this.media.getMetadata().addListener(metadataListener);
         this.fileName=file.getName();
+        this.path=file.getPath();
         for(String str:acceptableExtensions)
             if(file.getName().endsWith(str)){
                 fileName=fileName.substring(0,fileName.lastIndexOf(str)-1);

@@ -3,6 +3,8 @@ package sample;
 import sample.DataModel.PlayList;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.List;
 
 
 interface ViewActionsListener {
@@ -17,11 +19,16 @@ interface ViewActionsListener {
     void onExit();
     void onSort(PlayList.SORTTYPE sorttype);
     void onShuffle();
-    void onIncreaseRate(float rate);
-    void onDecreaseRate(float rate);
+    void onIncreaseRate();
+    void onDecreaseRate();
     void onPlayNext();
     void onPlayPrevious();
 
     void onDirOpen(File file);
+    void onMediaAdded(File file);
+   // void onMediasAdded(List<File> list);
+    void onDragDrop(File file,boolean playlistIsOn);
+    void onSavePlaylist() ;
+    void onLoadPlaylist(String listName);
 
 }
