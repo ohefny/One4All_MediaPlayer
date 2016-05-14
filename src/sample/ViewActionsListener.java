@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 
-interface ViewActionsListener {
+public interface ViewActionsListener {
     void onMediaOpen(File file);
 
     void onPause();
