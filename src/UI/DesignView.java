@@ -12,13 +12,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import sample.Controller;
 
 
 public class DesignView {
 
     Stage primaryStage;
     Scene scene;
-
+    private Controller controller;
 
     private BorderPane primaryPane ;
 
@@ -63,7 +64,9 @@ public class DesignView {
 
     private StackPane playListViewPane ;
 
-    public DesignView(){
+    public DesignView(Controller controller){
+
+        this.controller=controller;
         initializePrimaryPane();
     }
 

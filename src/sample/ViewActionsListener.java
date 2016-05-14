@@ -29,6 +29,6 @@ interface ViewActionsListener {
    // void onMediasAdded(List<File> list);
     void onDragDrop(File file,boolean playlistIsOn);
     void onSavePlaylist() ;
-    void onLoadPlaylist(String listName);
+    void onLoadPlaylist(File listPath);
 
 }
