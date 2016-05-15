@@ -21,7 +21,6 @@ public class PlayList {
     private int numOFMediaFiles;
     private int listDuration;
     private ArrayList<Integer>playingSeq=new ArrayList<>();
-    //private ArrayList
     private String Name="playlist";
 
     public File getPlayListPath() {
@@ -156,7 +155,6 @@ public class PlayList {
         return ret;
     }
 
-    //void Sort(SORTTYPE sorttype){}
     public void addMedia(Audio media,boolean openAndPlay){
         if(openAndPlay==true){
             clearList();
@@ -168,7 +166,13 @@ public class PlayList {
         list.add(media);
 
     }
-    public void removeMedia(Media media){
+    public void removeMedia(Integer index){
+        if(index>list.size()-1|| index <0)
+            return ;
+
+        playingSeq.remove((Object)index);
+        int idx=index;
+        list.remove(idx);
 
     }
     public void getNext(){

@@ -31,6 +31,7 @@ public class Audio{
     }
 
     public String getTitle() {
+        if(title.equals("NA"))return fileName;
         return title;
     }
 

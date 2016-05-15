@@ -285,6 +285,8 @@ public class DesignView {
         play.setOnAction(event -> viewActionsListener.onPlay());
         pause.setOnAction(event -> viewActionsListener.onPause());
         next.setOnAction(event -> viewActionsListener.onPlayNext());
+       // addToPlayListButton.setOnAction(event -> viewActionsListener.onMediaAdded());
+       // deleteButton.setOnAction(event -> viewActionsListener.onRemoveMedia(list));
 
 
     }
