@@ -1,6 +1,7 @@
 package sample;
 
 import UI.DesignView;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaPlayer;
@@ -270,6 +271,35 @@ public class Controller implements ViewActionsListener {
         mediaPlayer.setOnEndOfMedia(mediaEndListener);
         designView.getDurationBar().setValue(0);
         mediaPlayer.play();
+        new Thread(() -> {
+
+            try {
+               Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                while (true) {
+                    //System.out.println(mediaPlayer.getTotalDuration().toSeconds() * 1000) ;
+                    Thread.sleep( (long)((mediaPlayer.getTotalDuration().toMillis() ) / 100));
+                    Platform.runLater(() -> {
+                        designView.getDurationBar().setValue(designView.getDurationBar().getValue() + 1);
+                        designView.setDuration((int)mediaPlayer.getCurrentTime().toMillis());
+                    }
+                    );
+                    // System.out.println(designView.getDurationBar().getValue());
+                }
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }).start();
+
+
         mediaPlayer.setOnReady(new Runnable() {
 
             @Override
@@ -279,15 +309,38 @@ public class Controller implements ViewActionsListener {
                 }
 
                 designView.setFullDurationString((int) mediaPlayer.getMedia().getDuration().toMillis());
-                designView.setNowPlayingAlbumName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
-                designView.setNowPlayingArtistName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
-                designView.setNowPlayingSongName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
-                if (mPlaylist.getCurrentlyPlaying().getAlbumCover() != null)
-                    designView.setAlbumPic(new ImageView(mPlaylist.getCurrentlyPlaying().getAlbumCover()));
+               // designView.setNowPlayingAlbumName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
+                //designView.setNowPlayingArtistName(mPlaylist.getCurrentlyPlaying().getAlbum());
+                //designView.setNowPlayingSongName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
+                //if (mPlaylist.getCurrentlyPlaying().getAlbumCover() != null)
+                  //  designView.setAlbumPic(new ImageView(mPlaylist.getCurrentlyPlaying().getAlbumCover()));
             }
         });
 
+        new Thread(() -> {
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //System.out.println((String) mediaPlayer.getMedia().getMetadata().get("artist"));
+            Platform.runLater(() ->{
+                designView.setNowPlayingArtistName((String)mPlaylist.getCurrentlyPlaying().getArtist() );
+                designView.setNowPlayingAlbumName((String) mPlaylist.getCurrentlyPlaying().getAlbum());
+                designView.setNowPlayingSongName(mPlaylist.getCurrentlyPlaying().getTitle());
+                designView.setPicPane(mPlaylist.getCurrentlyPlaying().getAlbumCover());
+            }
+            );
+
+
+        }).start();
     }
+
+
+
+
+
 
     class MediaEndListener implements Runnable {
         @Override

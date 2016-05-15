@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -63,6 +64,14 @@ public class DesignView {
 
     public Slider getDurationBar() {
         return durationBar;
+    }
+
+
+    public String setIniFullDurationString(int fullDuration) {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        df.setTimeZone(tz);
+        return fullDurationString;
     }
 
     public void setDurationBar(Slider durationBar) {
@@ -129,6 +138,7 @@ public class DesignView {
 
         musicButton = new Button("", new ImageView("icons/music.png"));
         musicButton.setStyle("-fx-background-color: black;");
+        musicButton.setStyle("-fx-border-color: white; ");
         listButton = new Button("", new ImageView("icons/list.png"));
         listButton.setStyle("-fx-background-color: black;");
         openButton = new Button("", new ImageView("icons/file.png"));
@@ -216,16 +226,17 @@ public class DesignView {
         nowPlayingSongName = new Label(nowPlaying);
         nowPlayingSongName.setFont(Font.font("Times New Roman",
                 FontWeight.BOLD, FontPosture.REGULAR, 32));
+        nowPlayingSongName.setTextFill(Color.WHITE);
 
         nowPlayingAlbumName = new Label(albumName);
         nowPlayingAlbumName.setFont(Font.font("Times New Roman",
                 FontWeight.LIGHT, FontPosture.REGULAR, 22));
-
+        nowPlayingAlbumName.setTextFill(Color.WHITE);
 
         nowPlayingArtistName = new Label(artist);
         nowPlayingArtistName.setFont(Font.font("Times New Roman",
                 FontWeight.LIGHT, FontPosture.REGULAR, 22));
-
+        nowPlayingArtistName.setTextFill(Color.WHITE);
 
     }
 
@@ -254,7 +265,7 @@ public class DesignView {
         thirdPiecePane = new GridPane();
         durationBar = new Slider(0, 100, 0);
         durationBar.setPrefWidth(200);
-        volumeBar = new Slider(0, 100, 50);
+        volumeBar = new Slider(0, 100, 40);
 
         volumeBar.setPrefWidth(200);
 
@@ -263,8 +274,10 @@ public class DesignView {
         slidersPane.getChildren().addAll(durationBar, volumeBar);
 
 
-        duration = new Label(Integer.toString(currentDuration) + " / " + Integer.toString(fullDuration));
-        volume = new Label("Volume: " + Integer.toString(currentVolume));
+        duration = new Label("00:00:00" + "/" +  "00:00:00");
+        duration.setTextFill(Color.WHITE);
+        volume = new Label("Volume: " + Integer.toString((int)volumeBar.getValue()));
+        volume.setTextFill(Color.WHITE);
         labelsPane.getChildren().addAll(duration, volume);
 
         thirdPiecePane.add(labelsPane, 0, 0);
@@ -590,24 +603,31 @@ public class DesignView {
         return nowPlayingSongName;
     }
 
-    public void setNowPlayingSongName(Label nowPlayingSongName) {
-        this.nowPlayingSongName = nowPlayingSongName;
+    public void setNowPlayingSongName(String str) {
+        nowPlayingSongName.setText(str);
     }
 
     public Label getNowPlayingAlbumName() {
         return nowPlayingAlbumName;
     }
 
-    public void setNowPlayingAlbumName(Label nowPlayingAlbumName) {
-        this.nowPlayingAlbumName = nowPlayingAlbumName;
+    public void setNowPlayingAlbumName(String str) {
+        if (str == null)
+            nowPlayingAlbumName.setText("Unknown Album");
+        else
+            nowPlayingAlbumName.setText(str);
     }
 
     public Label getNowPlayingArtistName() {
         return nowPlayingArtistName;
     }
 
-    public void setNowPlayingArtistName(Label nowPlayingArtistName) {
-        this.nowPlayingArtistName = nowPlayingArtistName;
+    public void setNowPlayingArtistName(String str) {
+        if(str!=null)
+            nowPlayingArtistName.setText(str);
+        else
+            nowPlayingArtistName.setText("Unknown Artist");
+
     }
 
     public Label getDuration() {
@@ -650,8 +670,20 @@ public class DesignView {
         return picPane;
     }
 
-    public void setPicPane(StackPane picPane) {
-        this.picPane = picPane;
+    public void setPicPane(Image img) {
+        if(img!=null)
+        {
+            ImageView temp= new ImageView(img);
+            temp.setFitHeight(128);
+            temp.setFitWidth(128);
+            picPane.getChildren().removeAll();
+            picPane.getChildren().add(temp);
+        }
+        else{
+            picPane.getChildren().removeAll();
+            picPane.getChildren().add(new ImageView("icons/default.jpg"));
+        }
+
     }
 
     public VBox getSongDataPane() {

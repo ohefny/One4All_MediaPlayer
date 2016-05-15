@@ -13,10 +13,10 @@ public class Audio{
 
 
     private String fileName="NA";
-    private String artist="NA";
-    private String album="NA";
+    private String artist="Unknown Artist";
+    private String album="Unknown Album";
     private String year="NA";
-    private String title="NA";
+    private String title="Unknown Title";
 
 
     Image albumCover;
