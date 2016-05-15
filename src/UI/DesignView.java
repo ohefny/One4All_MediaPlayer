@@ -1,18 +1,26 @@
 package UI;
 
+import com.sun.javafx.collections.ObservableSequentialListWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sample.*;
+
+import java.io.File;
+import java.util.List;
 
 
 public class DesignView {
@@ -59,6 +67,16 @@ public class DesignView {
     private Button addToPlayListButton, savePlayListButton, shufflePlayListButton, deleteButton;
 
     private StackPane playListViewPane;
+
+    private ListView<String> playlist;
+
+    public ListView<String> getPlaylist() {
+        return playlist;
+    }
+
+    public void setPlaylist(ListView<String> playlist) {
+        this.playlist = playlist;
+    }
 
     public DesignView(ViewActionsListener viewActionsListener) {
 
@@ -243,7 +261,14 @@ public class DesignView {
         playListViewPane = new StackPane();
         //playListViewPane.setPadding(new Insets(10,10,10,10));
         playListViewPane.setStyle("-fx-border-color: white;  -fx-background-color: black;");
+        initializePlayListView();
+        playListViewPane.getChildren().add(playlist);
     }
+
+    private void initializePlayListView() {
+        playlist = new ListView<>();
+        playlist.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        }
 
     private void initializedownOfPlaylistPane() {
         addToPlayListButton = new Button("", new ImageView("icons/add.png"));
@@ -288,7 +313,13 @@ public class DesignView {
        // addToPlayListButton.setOnAction(event -> viewActionsListener.onMediaAdded());
        // deleteButton.setOnAction(event -> viewActionsListener.onRemoveMedia(list));
 
+    }
 
+
+    public File whereToSave(){
+        DirectoryChooser choose = new DirectoryChooser();
+        choose.setTitle("Choose the folder where you want to save your playlist ");
+        return choose.showDialog(null);
     }
 
     public void show() {
@@ -299,6 +330,35 @@ public class DesignView {
         primaryStage.setResizable(false);
         primaryStage.setTitle("One4All");
         primaryStage.show();
+    }
+
+
+
+
+    public static File[] getNew(){
+        FileChooser choose = new FileChooser();
+        choose.setTitle("choose new file(s)");
+        List<File> list =choose.showOpenMultipleDialog(null);
+        File[] out = new File[list.size()];
+        return list.toArray(out);
+
+    }
+
+
+
+    public double getDurationBarValue() {
+        return durationBar.getValue();
+    }
+
+    public void setDurationBarValue(double v) {
+        this.durationBar.setValue(v);
+    }
+    public double getVolumeBarValue() {
+        return volumeBar.getValue();
+    }
+
+    public void setVolumeBar(double v) {
+        this.volumeBar.setValue(v);
     }
 
     public Stage getPrimaryStage() {
@@ -461,23 +521,6 @@ public class DesignView {
         this.artist = artist;
     }
 
-    public Slider getDurationBar() {
-
-        return durationBar;
-    }
-
-    public void setDurationBar(Slider durationBar) {
-        this.durationBar = durationBar;
-    }
-
-    public Slider getVolumeBar() {
-        return volumeBar;
-    }
-
-    public void setVolumeBar(Slider volumeBar) {
-        this.volumeBar = volumeBar;
-    }
-
     public int getCurrentDuration() {
         return currentDuration;
     }
@@ -630,5 +673,9 @@ public class DesignView {
     public void setPlayListViewPane(StackPane playListViewPane) {
         this.playListViewPane = playListViewPane;
     }
+
+
+
+
 }
 
