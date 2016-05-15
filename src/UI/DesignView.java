@@ -20,7 +20,10 @@ import javafx.stage.Stage;
 import sample.*;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 
 public class DesignView {
@@ -46,6 +49,33 @@ public class DesignView {
     private String nowPlaying = "Song's name";
     private String albumName = "Album", artist = "Artist";
 
+    public void setFullDurationString(int fullDuration) {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        df.setTimeZone(tz);
+        this.fullDurationString = df.format(new Date(fullDuration));
+        System.out.println(fullDurationString);
+
+    }
+
+    String fullDurationString="";
+
+
+    public Slider getDurationBar() {
+        return durationBar;
+    }
+
+    public void setDurationBar(Slider durationBar) {
+        this.durationBar = durationBar;
+    }
+
+    public Slider getVolumeBar() {
+        return volumeBar;
+    }
+
+    public void setVolumeBar(Slider volumeBar) {
+        this.volumeBar = volumeBar;
+    }
 
     private Slider durationBar, volumeBar;
 
@@ -310,7 +340,14 @@ public class DesignView {
         play.setOnAction(event -> viewActionsListener.onPlay());
         pause.setOnAction(event -> viewActionsListener.onPause());
         next.setOnAction(event -> viewActionsListener.onPlayNext());
-       // addToPlayListButton.setOnAction(event -> viewActionsListener.onMediaAdded());
+        openButton.setOnAction(event -> viewActionsListener.onMediaOpen(getNew()));
+        addToPlayListButton.setOnAction(event -> viewActionsListener.onMediaAdded(getNew()));
+        durationBar.setOnMouseDragged(event -> viewActionsListener.onDurationChange((float) durationBar.getValue()));
+        //durationBar.setOnKeyPressed(event -> viewActionsListener.onDurationChange((float) durationBar.getValue()));
+        durationBar.setOnMouseClicked(event -> viewActionsListener.onDurationChange((float) durationBar.getValue()));
+        volumeBar.setOnMouseDragged(event -> viewActionsListener.onVolumeChange((float) volumeBar.getValue()));
+                volumeBar.setOnMouseClicked(event -> viewActionsListener.onVolumeChange((float) volumeBar.getValue()));
+        // addToPlayListButton.setOnAction(event -> viewActionsListener.onMediaAdded());
        // deleteButton.setOnAction(event -> viewActionsListener.onRemoveMedia(list));
 
     }
@@ -339,6 +376,8 @@ public class DesignView {
         FileChooser choose = new FileChooser();
         choose.setTitle("choose new file(s)");
         List<File> list =choose.showOpenMultipleDialog(null);
+        if(list==null)
+            return null;
         File[] out = new File[list.size()];
         return list.toArray(out);
 
@@ -534,7 +573,9 @@ public class DesignView {
     }
 
     public void setFullDuration(int fullDuration) {
-        this.fullDuration = fullDuration;
+
+        this.fullDuration=fullDuration;
+
     }
 
     public int getCurrentVolume() {
@@ -573,16 +614,28 @@ public class DesignView {
         return duration;
     }
 
-    public void setDuration(Label duration) {
-        this.duration = duration;
+    public void setDuration(int duration2) {
+       String chaningStr="";
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        df.setTimeZone(tz);
+       chaningStr = df.format(new Date(duration2));
+       // System.out.println(fullDurationString);
+       duration.setText(chaningStr+"/"+fullDurationString);
     }
 
     public Label getVolume() {
         return volume;
     }
 
-    public void setVolume(Label volume) {
-        this.volume = volume;
+    public void setVolume(int val) {
+       // String label=volume.getText();
+       // String plus=" ";
+        String string = "Volume: "+val;
+      //  if(label.length()>string.length()){
+       //     string+=" ";
+      //  }
+        volume.setText(string);
     }
 
     public ImageView getAlbumPic() {

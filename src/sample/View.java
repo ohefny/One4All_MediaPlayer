@@ -28,8 +28,8 @@ public class View extends VBox {
          mListener=listener;
          openSongTA.setText("");
          getChildren().add(openSongTA);
-         button.setOnAction(event -> mListener.onMediaOpen(new File(openSongTA.getText())));
-         openBt.setOnAction(event -> mListener.onDirOpen(new File(openSongTA.getText())));
+        // button.setOnAction(event -> mListener.onMediaOpen();
+        // openBt.setOnAction(event -> mListener.onDirOpen(new File(openSongTA.getText())));
          getChildren().add(button);
          getChildren().add(openBt);
          getChildren().add(mediaDirTA);

@@ -176,7 +176,7 @@ public class PlayList {
 
     }
     public void getNext(){
-        if(list.size()==0)return;
+        if(list.size()<=1)return;
         if(currentlyPlayinIndex==list.size()-1){
             currentlyPlayinIndex=0;
         }

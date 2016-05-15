@@ -1,6 +1,8 @@
 package sample.DataModel;
 
 import javafx.collections.MapChangeListener;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -16,6 +18,8 @@ public class Audio{
     private String year="NA";
     private String title="NA";
 
+
+    Image albumCover;
 
 
     private String path="NA";
@@ -64,6 +68,14 @@ public class Audio{
     public void setYear(String year) {
         this.year = year;
     }
+    public Image getAlbumCover() {
+        return albumCover;
+    }
+
+    public void setAlbumCover(Image albumCover) {
+        this.albumCover = albumCover;
+    }
+
     public String getFileName() {
         return fileName;
     }
@@ -132,18 +144,22 @@ class MetadataListener implements MapChangeListener<String,Object> {
     public void onChanged(Change<? extends String, ?> change) {
         if (change.getKey().equals("album")) {
             mAudio.setAlbum(change.getValueAdded().toString());
+            System.out.println(mAudio.getAlbum());
         }
         else if (change.getKey().equals("artist")) {
             mAudio.setArtist(change.getValueAdded().toString());
         }
         else if (change.getKey().equals("title")) {
+            System.out.println(mAudio.getTitle());
             mAudio.setTitle(change.getValueAdded().toString());
         }
         else if (change.getKey().equals("year")) {
             mAudio.setYear(change.getValueAdded().toString());
         }
-       // System.out.println(mAudio);
+        else if (change.getKey().equals("image")) {
+            mAudio.albumCover = ((Image) change.getValueAdded());
 
+        }
     }
 }
 

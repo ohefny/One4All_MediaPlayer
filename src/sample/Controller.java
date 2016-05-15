@@ -1,6 +1,8 @@
 package sample;
 
 import UI.DesignView;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import sample.DataModel.Audio;
@@ -10,6 +12,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Controller implements ViewActionsListener {
@@ -28,7 +31,7 @@ public class Controller implements ViewActionsListener {
     }
 
     public void onMediaOpen(File[] files) {
-        if (files==null||files.length == 0) return;
+        if (files == null || files.length == 0) return;
         if (files.length > 1)
             onDirOpen(files);
         else if (getFileFilter().accept(files[0])) {
@@ -52,7 +55,7 @@ public class Controller implements ViewActionsListener {
     @Override
     public void onMediaAdded(File[] list) {
         //File[] list=file.listFiles( getFileFilter());
-        if (list==null||list.length == 0) return;
+        if (list == null || list.length == 0) return;
         mPlaylist.addMediaCollection(false, getAudiosFromFiles(list));
     }
 
@@ -95,7 +98,7 @@ public class Controller implements ViewActionsListener {
 
     @Override
     public void onRemoveMedia(int index) {
-              mPlaylist.removeMedia(index);
+        mPlaylist.removeMedia(index);
     }
 
 
@@ -103,7 +106,7 @@ public class Controller implements ViewActionsListener {
     public void onPause() {
         if (mediaPlayer != null && mPlaylist.isPlaying()) {
             mediaPlayer.pause();
-            mPlaylist.setPaused(false);
+            mPlaylist.setPaused(true);
         }
     }
 
@@ -193,18 +196,24 @@ public class Controller implements ViewActionsListener {
 
     @Override
     public void onDurationChange(float val) {
-        double max=  designView.getDurationBar().getMax();
-        if(mediaPlayer!=null ){
+        System.out.println("fffffff ddd ");
+        double max = designView.getDurationBar().getMax();
+        if (mediaPlayer != null) {
             double duration = mediaPlayer.getMedia().getDuration().toSeconds();
-            double unit= duration/max;
-            mediaPlayer.seek(new Duration(val*unit*1000));
+            double unit = duration / max;
+            mediaPlayer.seek(new Duration(val * unit * 1000));
+            designView.setDuration((int) mediaPlayer.getCurrentTime().toMillis());
 
         }
     }
 
     @Override
     public void onVolumeChange(float val) {
-
+        double max = designView.getVolumeBar().getMax();
+        designView.setVolume((int) val);
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(val / max);
+        }
     }
 
 
@@ -259,8 +268,25 @@ public class Controller implements ViewActionsListener {
         }
         mPlaylist.setPlaying(true);
         mediaPlayer.setOnEndOfMedia(mediaEndListener);
+        designView.getDurationBar().setValue(0);
         mediaPlayer.play();
-        //   mView.getText().appendText(System.lineSeparator()+"Now Playing ::: "+mPlaylist.getCurrentlyPlaying());
+        mediaPlayer.setOnReady(new Runnable() {
+
+            @Override
+            public void run() {
+                for (Map.Entry<String, Object> entry : mediaPlayer.getMedia().getMetadata().entrySet()){
+
+                }
+
+                designView.setFullDurationString((int) mediaPlayer.getMedia().getDuration().toMillis());
+                designView.setNowPlayingAlbumName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
+                designView.setNowPlayingArtistName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
+                designView.setNowPlayingSongName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
+                if (mPlaylist.getCurrentlyPlaying().getAlbumCover() != null)
+                    designView.setAlbumPic(new ImageView(mPlaylist.getCurrentlyPlaying().getAlbumCover()));
+            }
+        });
+
     }
 
     class MediaEndListener implements Runnable {
