@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
 import sample.DataModel.PlayList;
 
 import java.io.File;
@@ -13,7 +15,7 @@ public interface ViewActionsListener {
     void onPause();
 
     void onPlay();
-
+    boolean onCheckSaved();
     void onStop();
 
     void onExit();
@@ -30,10 +32,10 @@ public interface ViewActionsListener {
     void onMediaAdded(File[] list);
    // void onMediasAdded(List<File> list);
     void onDragDrop(File file,boolean playlistIsOn);
-    void onSavePlaylist() ;
-    void onLoadPlaylist(File listPath);
+    void onSavePlaylist(File Dir,boolean isNewPlt) ;
+   // void onLoadPlaylist(File listPath);
 
-    void onRemoveMedia(int index);
+    void onRemoveMedia(ObservableList<Integer>list);
 
     void onMediaChanged(int index);
 }

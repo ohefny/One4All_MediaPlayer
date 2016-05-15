@@ -23,44 +23,48 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Controller implements ViewActionsListener {
-    boolean first=true;
+    boolean first = true;
     private PlayList mPlaylist;
     private MediaPlayer mediaPlayer;
     private DesignView designView;
     private MediaEndListener mediaEndListener;
     private MetadataListener metadataListener;
-    private int volumeValue=50;
+    private int volumeValue = 50;
     ListProperty<Audio> listProperty = new SimpleListProperty<>();
     private double rate = 1;
+    private boolean isSaved;
 
     public Controller() {
         designView = new DesignView(this);
         mPlaylist = new PlayList();
         mediaEndListener = new MediaEndListener();
-        metadataListener=new MetadataListener(designView);
+        metadataListener = new MetadataListener(designView);
 
         designView.getPlaylist().itemsProperty().bind(listProperty);
         assignMediaToPlayer();
-
 
 
     }
 
     public void onMediaOpen(File[] files) {
         if (files == null || files.length == 0) return;
+
         if (files.length > 1)
             onDirOpen(files);
         else if (getFileFilter().accept(files[0])) {
             mPlaylist.addMedia(new Audio(files[0]), true);
             assignMediaToPlayer();
             mediaPlayer.play();
+            isSaved = false;
+        } else if (files[0].getName().toLowerCase().endsWith(".plt")) {
+            onLoadPlaylist(files[0]);
         }
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
-               try {
+                try {
                     Thread.sleep(700);
-                    Platform.runLater(()->listProperty.set(FXCollections.observableArrayList(mPlaylist.getList())));
+                    Platform.runLater(() -> listProperty.set(FXCollections.observableArrayList(mPlaylist.getList())));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -68,7 +72,6 @@ public class Controller implements ViewActionsListener {
             }
         }.start();
 
-        listProperty.set(FXCollections.observableArrayList(mPlaylist.getList()));
 
     }
 
@@ -87,20 +90,20 @@ public class Controller implements ViewActionsListener {
         //File[] list=file.listFiles( getFileFilter());
         if (list == null || list.length == 0) return;
         mPlaylist.addMediaCollection(false, getAudiosFromFiles(list));
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 try {
                     Thread.sleep(500);
-                    Platform.runLater(()->listProperty.set(FXCollections.observableArrayList(mPlaylist.getList())));
+                    Platform.runLater(() -> listProperty.set(FXCollections.observableArrayList(mPlaylist.getList())));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 super.run();
             }
         }.start();
-        listProperty.set(FXCollections.observableArrayList(mPlaylist.getList()));
-        for(Audio audio:mPlaylist.getList())
+
+        for (Audio audio : mPlaylist.getList())
             System.out.println(audio);
     }
 
@@ -110,30 +113,54 @@ public class Controller implements ViewActionsListener {
     }
 
     @Override
-    public void onSavePlaylist() {
+    public void onSavePlaylist(File dir, boolean isNewPlt) {
         File file;
         PrintWriter printWriter;
+        // if(dir==null&&isNewPlt==true)return;
+        if (isNewPlt) {
+            //System.out.println(dir.getPath().toString());
+            try {
+                file = new File(dir.getPath().toString());
+                printWriter = new PrintWriter(file);
+                for (Audio audio : mPlaylist.getList())
+                    printWriter.println(audio.getPath());
+                printWriter.close();
+            } catch (FileNotFoundException ex) {
 
-        if (mPlaylist.getPlayListPath() != null) {
+            }
+
+
+        } else if (isSaved) {
             file = new File(mPlaylist.getPlayListPath().getPath());
             try {
                 printWriter = new PrintWriter(file);
                 for (Audio audio : mPlaylist.getList())
                     printWriter.println(audio.getPath());
+                printWriter.close();
             } catch (FileNotFoundException ex) {
 
             }
 
-        } else {
-            //open dir chooser dialog
         }
+
     }
 
-    @Override
     public void onLoadPlaylist(File listPath) {
         try {
             Scanner scanner = new Scanner(listPath);
+            ArrayList<Audio> audios = new ArrayList<>();
+            while (scanner.hasNext()) {
+                File song = new File(scanner.nextLine());
+                if (song.exists())
+                    audios.add(new Audio(song));
 
+            }
+            scanner.close();
+            mPlaylist.addMediaCollection(true, audios);
+            mPlaylist.setPlayListPath(listPath);
+            System.out.println("ON LOADDDDD");
+            isSaved = true;
+            assignMediaToPlayer();
 
         } catch (FileNotFoundException ex) {
 
@@ -142,13 +169,19 @@ public class Controller implements ViewActionsListener {
     }
 
     @Override
-    public void onRemoveMedia(int index) {
-        mPlaylist.removeMedia(index);
+    public void onRemoveMedia(ObservableList<Integer>list) {
+        if(list==null)return;
+        if (list.size() > 0) {
+            for (int x : list)
+                mPlaylist.removeMedia(x);
+
+        }
+        listProperty.set(FXCollections.observableArrayList(mPlaylist.getList()));
     }
 
     @Override
     public void onMediaChanged(int index) {
-           mPlaylist.changePlaying( index);
+        mPlaylist.changePlaying(index);
         assignMediaToPlayer();
     }
 
@@ -174,6 +207,11 @@ public class Controller implements ViewActionsListener {
 
         } else
             assignMediaToPlayer();
+    }
+
+    @Override
+    public boolean onCheckSaved() {
+        return isSaved;
     }
 
     @Override
@@ -259,7 +297,7 @@ public class Controller implements ViewActionsListener {
 
     @Override
     public void onVolumeChange(int val) {
-        volumeValue=val;
+        volumeValue = val;
         double max = designView.getVolumeBar().getMax();
         designView.setVolume((int) val);
         if (mediaPlayer != null) {
@@ -321,8 +359,8 @@ public class Controller implements ViewActionsListener {
         mediaPlayer.setOnEndOfMedia(mediaEndListener);
         designView.getDurationBar().setValue(0);
         mediaPlayer.play();
-        mediaPlayer.setVolume(volumeValue/100.0);
-      //  metadataListener=new MetadataListener(designView);
+        mediaPlayer.setVolume(volumeValue / 100.0);
+        //  metadataListener=new MetadataListener(designView);
         mediaPlayer.getMedia().getMetadata().addListener(metadataListener);
 
 
@@ -338,31 +376,28 @@ public class Controller implements ViewActionsListener {
         }
     }
 
-class MetadataListener implements MapChangeListener<String,Object> {
-    DesignView designView;
+    class MetadataListener implements MapChangeListener<String, Object> {
+        DesignView designView;
 
-    public MetadataListener(DesignView designView) {
-        this.designView = designView;
-    }
-
-    @Override
-    public void onChanged(Change<? extends String, ?> change) {
-        if (change.getKey().equals("album")) {
-            designView.setNowPlayingAlbumName((change.getValueAdded().toString()));
-
+        public MetadataListener(DesignView designView) {
+            this.designView = designView;
         }
-        else if (change.getKey().equals("artist")) {
-            designView.setNowPlayingArtistName((change.getValueAdded().toString()));
-        }
-        else if (change.getKey().equals("title")) {
-            designView.setNowPlayingSongName(change.getValueAdded().toString());
-        }
-        else if (change.getKey().equals("image")) {
-            designView.setAlbumPic(((Image) change.getValueAdded()));
 
+        @Override
+        public void onChanged(Change<? extends String, ?> change) {
+            if (change.getKey().equals("album")) {
+                designView.setNowPlayingAlbumName((change.getValueAdded().toString()));
+
+            } else if (change.getKey().equals("artist")) {
+                designView.setNowPlayingArtistName((change.getValueAdded().toString()));
+            } else if (change.getKey().equals("title")) {
+                designView.setNowPlayingSongName(change.getValueAdded().toString());
+            } else if (change.getKey().equals("image")) {
+                designView.setAlbumPic(((Image) change.getValueAdded()));
+
+            }
         }
     }
-}
 
 
 }

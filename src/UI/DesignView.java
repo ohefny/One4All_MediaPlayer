@@ -362,6 +362,7 @@ public class DesignView {
                 }
             }
         });
+        deleteButton.setOnAction(event -> viewActionsListener.onRemoveMedia(playlist.getSelectionModel().getSelectedIndices()));
         previous.setOnAction(event -> viewActionsListener.onPlayPrevious());
         play.setOnAction(event -> viewActionsListener.onPlay());
         pause.setOnAction(event -> viewActionsListener.onPause());
@@ -377,13 +378,29 @@ public class DesignView {
        // deleteButton.setOnAction(event -> viewActionsListener.onRemoveMedia(list));
         shufflePlayListButton.setOnAction(event -> viewActionsListener.onShuffle());
 
+        savePlayListButton.setOnAction(event -> {
+            if(viewActionsListener.onCheckSaved())
+                viewActionsListener.onSavePlaylist(null,false);
+
+            else{
+                File file=whereToSave();
+               if(file!=null)
+                   viewActionsListener.onSavePlaylist(file,true);
+            }
+        });
+
     }
 
 
     public File whereToSave(){
-        DirectoryChooser choose = new DirectoryChooser();
-        choose.setTitle("Choose the folder where you want to save your playlist ");
-        return choose.showDialog(null);
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PLT files (*.plt)", "*.plt");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //Show save file dialog
+        File file = fileChooser.showSaveDialog(primaryStage);
+
+        return file;
     }
 
     public void show() {
