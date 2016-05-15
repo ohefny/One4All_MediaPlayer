@@ -130,7 +130,8 @@ public class Audio{
 
     @Override
     public String toString() {
-        return String.format("Artist:%s  Title:%s  Year:%s  Album:%s",artist,title,year,album)+"***" +fileName;
+
+        return getTitle();
     }
 }
 class MetadataListener implements MapChangeListener<String,Object> {
@@ -144,7 +145,7 @@ class MetadataListener implements MapChangeListener<String,Object> {
     public void onChanged(Change<? extends String, ?> change) {
         if (change.getKey().equals("album")) {
             mAudio.setAlbum(change.getValueAdded().toString());
-            System.out.println(mAudio.getAlbum());
+         //   System.out.println(mAudio.getAlbum());
         }
         else if (change.getKey().equals("artist")) {
             mAudio.setArtist(change.getValueAdded().toString());

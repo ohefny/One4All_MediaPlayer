@@ -8,7 +8,13 @@ import java.io.File;
 import java.util.*;
 
 public class PlayList {
-     public enum SORTTYPE{DEFAULT,TITLE,YEAR,ARTIST,ALBUM}
+    public void changePlaying(int  idx) {
+        currentlyPlayinIndex=idx;
+        currentlyPlaying=list.get(idx);
+
+    }
+
+    public enum SORTTYPE{DEFAULT,TITLE,YEAR,ARTIST,ALBUM}
 
     private SORTTYPE sorttype=SORTTYPE.DEFAULT;
     private Audio currentlyPlaying;
@@ -117,21 +123,21 @@ public class PlayList {
 
     private void makeSequene(int starting){
         //currentlyPlaying=list.get(0);
-        switch(sorttype){
-                case ARTIST:
-                    list.sort(Audio.getArtistComprator());
-                    break;
-                case TITLE:
-                    list.sort(Audio.getTitleComprator());
-                    break;
-            case YEAR:
-               list.sort(Audio.getYearComprator());
-                break;
-
-            case ALBUM:
-               list.sort(Audio.getAlbumComprator());
-               break;
-            default:
+//        switch(sorttype){
+//                case ARTIST:
+//                    list.sort(Audio.getArtistComprator());
+//                    break;
+//                case TITLE:
+//                    list.sort(Audio.getTitleComprator());
+//                    break;
+//            case YEAR:
+//               list.sort(Audio.getYearComprator());
+//                break;
+//
+//            case ALBUM:
+//               list.sort(Audio.getAlbumComprator());
+//               break;
+//            default:
                 if(shuffle){
                     if(starting!=0)
                         playingSeq.addAll(shuffleSequence(starting));
@@ -143,7 +149,7 @@ public class PlayList {
                        playingSeq.add(i);
 
                 }
-        }
+        //}
 
     }
 
@@ -164,6 +170,7 @@ public class PlayList {
             paused=false;
         }
         list.add(media);
+        makeSequene(list.size()-2);
 
     }
     public void removeMedia(Integer index){
@@ -176,9 +183,9 @@ public class PlayList {
 
     }
     public void getNext(){
-        if(list.size()<=1)return;
-        if(currentlyPlayinIndex==list.size()-1){
-            currentlyPlayinIndex=0;
+
+        if(list.size()==0||currentlyPlayinIndex==list.size()-1){
+            return;
         }
         else{
             currentlyPlayinIndex++;
@@ -189,9 +196,10 @@ public class PlayList {
     }
     public void getPrevious(){
        // return null;
-        if(list.size()==0)return;
-        if(currentlyPlayinIndex>0) {
-            currentlyPlayinIndex--;
+      //  if(list.size()==0||list.size()==1)return;
+        if(list.size()==0||currentlyPlayinIndex>0) {
+            return;
+            //currentlyPlayinIndex--;
         }
         else{
             currentlyPlayinIndex=list.size()-1;

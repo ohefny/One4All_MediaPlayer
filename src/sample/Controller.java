@@ -1,7 +1,14 @@
 package sample;
 
 import UI.DesignView;
+import javafx.application.Platform;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -16,17 +23,26 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Controller implements ViewActionsListener {
+    boolean first=true;
     private PlayList mPlaylist;
     private MediaPlayer mediaPlayer;
     private DesignView designView;
     private MediaEndListener mediaEndListener;
+    private MetadataListener metadataListener;
+    private int volumeValue=50;
+    ListProperty<Audio> listProperty = new SimpleListProperty<>();
     private double rate = 1;
 
     public Controller() {
         designView = new DesignView(this);
         mPlaylist = new PlayList();
         mediaEndListener = new MediaEndListener();
+        metadataListener=new MetadataListener(designView);
+
+        designView.getPlaylist().itemsProperty().bind(listProperty);
         assignMediaToPlayer();
+
+
 
     }
 
@@ -39,6 +55,20 @@ public class Controller implements ViewActionsListener {
             assignMediaToPlayer();
             mediaPlayer.play();
         }
+        new Thread(){
+            @Override
+            public void run() {
+               try {
+                    Thread.sleep(700);
+                    Platform.runLater(()->listProperty.set(FXCollections.observableArrayList(mPlaylist.getList())));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                super.run();
+            }
+        }.start();
+
+        listProperty.set(FXCollections.observableArrayList(mPlaylist.getList()));
 
     }
 
@@ -47,8 +77,8 @@ public class Controller implements ViewActionsListener {
     public void onDirOpen(File[] files) {
         List<Audio> audios = getAudiosFromFiles(files);
         mPlaylist.addMediaCollection(true, audios);
-        onShuffle();
         assignMediaToPlayer();
+
 
     }
 
@@ -57,6 +87,21 @@ public class Controller implements ViewActionsListener {
         //File[] list=file.listFiles( getFileFilter());
         if (list == null || list.length == 0) return;
         mPlaylist.addMediaCollection(false, getAudiosFromFiles(list));
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                    Platform.runLater(()->listProperty.set(FXCollections.observableArrayList(mPlaylist.getList())));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                super.run();
+            }
+        }.start();
+        listProperty.set(FXCollections.observableArrayList(mPlaylist.getList()));
+        for(Audio audio:mPlaylist.getList())
+            System.out.println(audio);
     }
 
     @Override
@@ -99,6 +144,12 @@ public class Controller implements ViewActionsListener {
     @Override
     public void onRemoveMedia(int index) {
         mPlaylist.removeMedia(index);
+    }
+
+    @Override
+    public void onMediaChanged(int index) {
+           mPlaylist.changePlaying( index);
+        assignMediaToPlayer();
     }
 
 
@@ -196,7 +247,6 @@ public class Controller implements ViewActionsListener {
 
     @Override
     public void onDurationChange(float val) {
-        System.out.println("fffffff ddd ");
         double max = designView.getDurationBar().getMax();
         if (mediaPlayer != null) {
             double duration = mediaPlayer.getMedia().getDuration().toSeconds();
@@ -208,7 +258,8 @@ public class Controller implements ViewActionsListener {
     }
 
     @Override
-    public void onVolumeChange(float val) {
+    public void onVolumeChange(int val) {
+        volumeValue=val;
         double max = designView.getVolumeBar().getMax();
         designView.setVolume((int) val);
         if (mediaPlayer != null) {
@@ -270,22 +321,10 @@ public class Controller implements ViewActionsListener {
         mediaPlayer.setOnEndOfMedia(mediaEndListener);
         designView.getDurationBar().setValue(0);
         mediaPlayer.play();
-        mediaPlayer.setOnReady(new Runnable() {
+        mediaPlayer.setVolume(volumeValue/100.0);
+      //  metadataListener=new MetadataListener(designView);
+        mediaPlayer.getMedia().getMetadata().addListener(metadataListener);
 
-            @Override
-            public void run() {
-                for (Map.Entry<String, Object> entry : mediaPlayer.getMedia().getMetadata().entrySet()){
-
-                }
-
-                designView.setFullDurationString((int) mediaPlayer.getMedia().getDuration().toMillis());
-                designView.setNowPlayingAlbumName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
-                designView.setNowPlayingArtistName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
-                designView.setNowPlayingSongName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
-                if (mPlaylist.getCurrentlyPlaying().getAlbumCover() != null)
-                    designView.setAlbumPic(new ImageView(mPlaylist.getCurrentlyPlaying().getAlbumCover()));
-            }
-        });
 
     }
 
@@ -298,4 +337,32 @@ public class Controller implements ViewActionsListener {
             //mView.getText().appendText(System.lineSeparator()+"Now Playing ::: "+mPlaylist.getCurrentlyPlaying());
         }
     }
+
+class MetadataListener implements MapChangeListener<String,Object> {
+    DesignView designView;
+
+    public MetadataListener(DesignView designView) {
+        this.designView = designView;
+    }
+
+    @Override
+    public void onChanged(Change<? extends String, ?> change) {
+        if (change.getKey().equals("album")) {
+            designView.setNowPlayingAlbumName((change.getValueAdded().toString()));
+
+        }
+        else if (change.getKey().equals("artist")) {
+            designView.setNowPlayingArtistName((change.getValueAdded().toString()));
+        }
+        else if (change.getKey().equals("title")) {
+            designView.setNowPlayingSongName(change.getValueAdded().toString());
+        }
+        else if (change.getKey().equals("image")) {
+            designView.setAlbumPic(((Image) change.getValueAdded()));
+
+        }
+    }
+}
+
+
 }

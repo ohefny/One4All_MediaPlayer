@@ -24,7 +24,7 @@ public interface ViewActionsListener {
     void onPlayNext();
     void onPlayPrevious();
     void onDurationChange(float val);
-    void onVolumeChange(float val);
+    void onVolumeChange(int val);
 
    // void onDirOpen(File[] file);
     void onMediaAdded(File[] list);
@@ -34,4 +34,6 @@ public interface ViewActionsListener {
     void onLoadPlaylist(File listPath);
 
     void onRemoveMedia(int index);
+
+    void onMediaChanged(int index);
 }

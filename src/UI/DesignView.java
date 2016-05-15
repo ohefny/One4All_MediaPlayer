@@ -3,11 +3,15 @@ package UI;
 import com.sun.javafx.collections.ObservableSequentialListWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -18,6 +22,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sample.*;
+import sample.DataModel.Audio;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -42,6 +47,15 @@ public class DesignView {
     private HBox secondPiecePane;
     private GridPane thirdPiecePane;
 
+//    public ObservableList<String> getItems() {
+//        return items;
+//    }
+//
+//    public void setItems(ObservableList<String> items) {
+//        this.items = items;
+//    }
+//
+//    private ObservableList<String> items;
     private BorderPane playListPane;
 
 
@@ -98,13 +112,13 @@ public class DesignView {
 
     private StackPane playListViewPane;
 
-    private ListView<String> playlist;
+    private ListView<Audio> playlist;
 
-    public ListView<String> getPlaylist() {
+    public ListView<Audio> getPlaylist() {
         return playlist;
     }
 
-    public void setPlaylist(ListView<String> playlist) {
+    public void setPlaylist(ListView<Audio> playlist) {
         this.playlist = playlist;
     }
 
@@ -112,7 +126,7 @@ public class DesignView {
 
         this.viewActionsListener = viewActionsListener;
         initializePrimaryPane();
-        initializeConrolersActions();
+        initializeControllersActions();
     }
 
     private void initializePrimaryPane() {
@@ -170,6 +184,7 @@ public class DesignView {
     }
 
     private void initializeConrolers() {
+        ObservableList<String> items = FXCollections.observableArrayList();
         previous = new Button("", new ImageView("icons/pre.png"));
         previous.setStyle(
                 "-fx-background-radius: 1000em; " +
@@ -296,9 +311,9 @@ public class DesignView {
     }
 
     private void initializePlayListView() {
-        playlist = new ListView<>();
+        playlist = new ListView<Audio>();
         playlist.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        }
+    }
 
     private void initializedownOfPlaylistPane() {
         addToPlayListButton = new Button("", new ImageView("icons/add.png"));
@@ -321,7 +336,7 @@ public class DesignView {
 
     }
 
-    private void initializeConrolersActions() {
+    private void initializeControllersActions() {
         getMusicButton().setOnAction(e -> {
             getMusicButton().setStyle("-fx-border-color: white; ");
             getListButton().setStyle("-fx-background-color: black;");
@@ -336,6 +351,17 @@ public class DesignView {
 
             getCenterPane().getChildren().add(getPlayListPane());
         });
+        playlist.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    if(mouseEvent.getClickCount() == 2){
+                        viewActionsListener.onMediaChanged(((ListView)mouseEvent.getSource()).getSelectionModel().getSelectedIndex());
+                      //  System.out.println(((ListCell)mouseEvent.getSource()).getIndex());
+                    }
+                }
+            }
+        });
         previous.setOnAction(event -> viewActionsListener.onPlayPrevious());
         play.setOnAction(event -> viewActionsListener.onPlay());
         pause.setOnAction(event -> viewActionsListener.onPause());
@@ -345,10 +371,11 @@ public class DesignView {
         durationBar.setOnMouseDragged(event -> viewActionsListener.onDurationChange((float) durationBar.getValue()));
         //durationBar.setOnKeyPressed(event -> viewActionsListener.onDurationChange((float) durationBar.getValue()));
         durationBar.setOnMouseClicked(event -> viewActionsListener.onDurationChange((float) durationBar.getValue()));
-        volumeBar.setOnMouseDragged(event -> viewActionsListener.onVolumeChange((float) volumeBar.getValue()));
-                volumeBar.setOnMouseClicked(event -> viewActionsListener.onVolumeChange((float) volumeBar.getValue()));
+        volumeBar.setOnMouseDragged(event -> viewActionsListener.onVolumeChange((int) volumeBar.getValue()));
+                volumeBar.setOnMouseClicked(event -> viewActionsListener.onVolumeChange((int) volumeBar.getValue()));
         // addToPlayListButton.setOnAction(event -> viewActionsListener.onMediaAdded());
        // deleteButton.setOnAction(event -> viewActionsListener.onRemoveMedia(list));
+        shufflePlayListButton.setOnAction(event -> viewActionsListener.onShuffle());
 
     }
 
@@ -590,24 +617,24 @@ public class DesignView {
         return nowPlayingSongName;
     }
 
-    public void setNowPlayingSongName(Label nowPlayingSongName) {
-        this.nowPlayingSongName = nowPlayingSongName;
+    public void setNowPlayingSongName(String nowPlayingSongName) {
+        this.nowPlayingSongName.setText( nowPlayingSongName);
     }
 
     public Label getNowPlayingAlbumName() {
         return nowPlayingAlbumName;
     }
 
-    public void setNowPlayingAlbumName(Label nowPlayingAlbumName) {
-        this.nowPlayingAlbumName = nowPlayingAlbumName;
+    public void setNowPlayingAlbumName(String nowPlayingAlbumName) {
+        this.nowPlayingAlbumName.setText(nowPlayingAlbumName);
     }
 
     public Label getNowPlayingArtistName() {
         return nowPlayingArtistName;
     }
 
-    public void setNowPlayingArtistName(Label nowPlayingArtistName) {
-        this.nowPlayingArtistName = nowPlayingArtistName;
+    public void setNowPlayingArtistName(String nowPlayingArtistName) {
+        this.nowPlayingArtistName.setText(nowPlayingArtistName);
     }
 
     public Label getDuration() {
@@ -642,8 +669,8 @@ public class DesignView {
         return albumPic;
     }
 
-    public void setAlbumPic(ImageView albumPic) {
-        this.albumPic = albumPic;
+    public void setAlbumPic(Image albumPic) {
+        this.albumPic.setImage(albumPic);
     }
 
     public StackPane getPicPane() {
