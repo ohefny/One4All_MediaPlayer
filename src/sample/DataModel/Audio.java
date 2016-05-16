@@ -13,10 +13,10 @@ public class Audio{
 
 
     private String fileName="NA";
-    private String artist="NA";
-    private String album="NA";
-    private String year="NA";
-    private String title="NA";
+    private String artist="Unknown Artist";
+    private String album="Unknown Album";
+    private String year="unknown";
+    private String title="Unknown Title";
 
 
     Image albumCover;
@@ -35,7 +35,7 @@ public class Audio{
     }
 
     public String getTitle() {
-        if(title.equals("NA"))return fileName;
+        if(title.equals("Unknown Title"))return fileName;
         return title;
     }
 
@@ -50,7 +50,6 @@ public class Audio{
     public void setArtist(String artist) {
         this.artist = artist;
     }
-
     public String getAlbum() {
         return album;
     }
@@ -130,7 +129,6 @@ public class Audio{
 
     @Override
     public String toString() {
-
         return getTitle();
     }
 }
@@ -145,7 +143,7 @@ class MetadataListener implements MapChangeListener<String,Object> {
     public void onChanged(Change<? extends String, ?> change) {
         if (change.getKey().equals("album")) {
             mAudio.setAlbum(change.getValueAdded().toString());
-         //   System.out.println(mAudio.getAlbum());
+            System.out.println(mAudio.getAlbum());
         }
         else if (change.getKey().equals("artist")) {
             mAudio.setArtist(change.getValueAdded().toString());

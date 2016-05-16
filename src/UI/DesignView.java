@@ -47,15 +47,6 @@ public class DesignView {
     private HBox secondPiecePane;
     private GridPane thirdPiecePane;
 
-//    public ObservableList<String> getItems() {
-//        return items;
-//    }
-//
-//    public void setItems(ObservableList<String> items) {
-//        this.items = items;
-//    }
-//
-//    private ObservableList<String> items;
     private BorderPane playListPane;
 
 
@@ -77,6 +68,14 @@ public class DesignView {
 
     public Slider getDurationBar() {
         return durationBar;
+    }
+
+
+    public String setIniFullDurationString(int fullDuration) {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        df.setTimeZone(tz);
+        return fullDurationString;
     }
 
     public void setDurationBar(Slider durationBar) {
@@ -143,6 +142,7 @@ public class DesignView {
 
         musicButton = new Button("", new ImageView("icons/music.png"));
         musicButton.setStyle("-fx-background-color: black;");
+        musicButton.setStyle("-fx-border-color: white; ");
         listButton = new Button("", new ImageView("icons/list.png"));
         listButton.setStyle("-fx-background-color: black;");
         openButton = new Button("", new ImageView("icons/file.png"));
@@ -184,7 +184,6 @@ public class DesignView {
     }
 
     private void initializeConrolers() {
-        ObservableList<String> items = FXCollections.observableArrayList();
         previous = new Button("", new ImageView("icons/pre.png"));
         previous.setStyle(
                 "-fx-background-radius: 1000em; " +
@@ -231,16 +230,17 @@ public class DesignView {
         nowPlayingSongName = new Label(nowPlaying);
         nowPlayingSongName.setFont(Font.font("Times New Roman",
                 FontWeight.BOLD, FontPosture.REGULAR, 32));
+        nowPlayingSongName.setTextFill(Color.WHITE);
 
         nowPlayingAlbumName = new Label(albumName);
         nowPlayingAlbumName.setFont(Font.font("Times New Roman",
                 FontWeight.LIGHT, FontPosture.REGULAR, 22));
-
+        nowPlayingAlbumName.setTextFill(Color.WHITE);
 
         nowPlayingArtistName = new Label(artist);
         nowPlayingArtistName.setFont(Font.font("Times New Roman",
                 FontWeight.LIGHT, FontPosture.REGULAR, 22));
-
+        nowPlayingArtistName.setTextFill(Color.WHITE);
 
     }
 
@@ -269,7 +269,7 @@ public class DesignView {
         thirdPiecePane = new GridPane();
         durationBar = new Slider(0, 100, 0);
         durationBar.setPrefWidth(200);
-        volumeBar = new Slider(0, 100, 50);
+        volumeBar = new Slider(0, 100, 40);
 
         volumeBar.setPrefWidth(200);
 
@@ -278,8 +278,10 @@ public class DesignView {
         slidersPane.getChildren().addAll(durationBar, volumeBar);
 
 
-        duration = new Label(Integer.toString(currentDuration) + " / " + Integer.toString(fullDuration));
-        volume = new Label("Volume: " + Integer.toString(currentVolume));
+        duration = new Label("00:00:00" + "/" +  "00:00:00");
+        duration.setTextFill(Color.WHITE);
+        volume = new Label("Volume: " + Integer.toString((int)volumeBar.getValue()));
+        volume.setTextFill(Color.WHITE);
         labelsPane.getChildren().addAll(duration, volume);
 
         thirdPiecePane.add(labelsPane, 0, 0);
@@ -311,7 +313,7 @@ public class DesignView {
     }
 
     private void initializePlayListView() {
-        playlist = new ListView<Audio>();
+        playlist = new ListView<>();
         playlist.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
@@ -357,7 +359,7 @@ public class DesignView {
                 if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
                     if(mouseEvent.getClickCount() == 2){
                         viewActionsListener.onMediaChanged(((ListView)mouseEvent.getSource()).getSelectionModel().getSelectedIndex());
-                      //  System.out.println(((ListCell)mouseEvent.getSource()).getIndex());
+                        //  System.out.println(((ListCell)mouseEvent.getSource()).getIndex());
                     }
                 }
             }
@@ -373,9 +375,9 @@ public class DesignView {
         //durationBar.setOnKeyPressed(event -> viewActionsListener.onDurationChange((float) durationBar.getValue()));
         durationBar.setOnMouseClicked(event -> viewActionsListener.onDurationChange((float) durationBar.getValue()));
         volumeBar.setOnMouseDragged(event -> viewActionsListener.onVolumeChange((int) volumeBar.getValue()));
-                volumeBar.setOnMouseClicked(event -> viewActionsListener.onVolumeChange((int) volumeBar.getValue()));
+        volumeBar.setOnMouseClicked(event -> viewActionsListener.onVolumeChange((int) volumeBar.getValue()));
         // addToPlayListButton.setOnAction(event -> viewActionsListener.onMediaAdded());
-       // deleteButton.setOnAction(event -> viewActionsListener.onRemoveMedia(list));
+        // deleteButton.setOnAction(event -> viewActionsListener.onRemoveMedia(list));
         shufflePlayListButton.setOnAction(event -> viewActionsListener.onShuffle());
 
         savePlayListButton.setOnAction(event -> {
@@ -384,8 +386,8 @@ public class DesignView {
 
             else{
                 File file=whereToSave();
-               if(file!=null)
-                   viewActionsListener.onSavePlaylist(file,true);
+                if(file!=null)
+                    viewActionsListener.onSavePlaylist(file,true);
             }
         });
 
@@ -634,24 +636,31 @@ public class DesignView {
         return nowPlayingSongName;
     }
 
-    public void setNowPlayingSongName(String nowPlayingSongName) {
-        this.nowPlayingSongName.setText( nowPlayingSongName);
+    public void setNowPlayingSongName(String str) {
+        nowPlayingSongName.setText(str);
     }
 
     public Label getNowPlayingAlbumName() {
         return nowPlayingAlbumName;
     }
 
-    public void setNowPlayingAlbumName(String nowPlayingAlbumName) {
-        this.nowPlayingAlbumName.setText(nowPlayingAlbumName);
+    public void setNowPlayingAlbumName(String str) {
+        if (str == null)
+            nowPlayingAlbumName.setText("Unknown Album");
+        else
+            nowPlayingAlbumName.setText(str);
     }
 
     public Label getNowPlayingArtistName() {
         return nowPlayingArtistName;
     }
 
-    public void setNowPlayingArtistName(String nowPlayingArtistName) {
-        this.nowPlayingArtistName.setText(nowPlayingArtistName);
+    public void setNowPlayingArtistName(String str) {
+        if(str!=null)
+            nowPlayingArtistName.setText(str);
+        else
+            nowPlayingArtistName.setText("Unknown Artist");
+
     }
 
     public Label getDuration() {
@@ -659,13 +668,13 @@ public class DesignView {
     }
 
     public void setDuration(int duration2) {
-       String chaningStr="";
+        String chaningStr="";
         TimeZone tz = TimeZone.getTimeZone("UTC");
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         df.setTimeZone(tz);
-       chaningStr = df.format(new Date(duration2));
-       // System.out.println(fullDurationString);
-       duration.setText(chaningStr+"/"+fullDurationString);
+        chaningStr = df.format(new Date(duration2));
+        // System.out.println(fullDurationString);
+        duration.setText(chaningStr+"/"+fullDurationString);
     }
 
     public Label getVolume() {
@@ -673,12 +682,12 @@ public class DesignView {
     }
 
     public void setVolume(int val) {
-       // String label=volume.getText();
-       // String plus=" ";
+        // String label=volume.getText();
+        // String plus=" ";
         String string = "Volume: "+val;
-      //  if(label.length()>string.length()){
-       //     string+=" ";
-      //  }
+        //  if(label.length()>string.length()){
+        //     string+=" ";
+        //  }
         volume.setText(string);
     }
 
@@ -686,16 +695,28 @@ public class DesignView {
         return albumPic;
     }
 
-    public void setAlbumPic(Image albumPic) {
-        this.albumPic.setImage(albumPic);
+    public void setAlbumPic(ImageView albumPic) {
+        this.albumPic = albumPic;
     }
 
     public StackPane getPicPane() {
         return picPane;
     }
 
-    public void setPicPane(StackPane picPane) {
-        this.picPane = picPane;
+    public void setPicPane(Image img) {
+        if(img!=null)
+        {
+            ImageView temp= new ImageView(img);
+            temp.setFitHeight(128);
+            temp.setFitWidth(128);
+            picPane.getChildren().removeAll();
+            picPane.getChildren().add(temp);
+        }
+        else{
+            picPane.getChildren().removeAll();
+            picPane.getChildren().add(new ImageView("icons/default.jpg"));
+        }
+
     }
 
     public VBox getSongDataPane() {

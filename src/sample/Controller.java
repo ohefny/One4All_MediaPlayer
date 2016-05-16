@@ -28,7 +28,6 @@ public class Controller implements ViewActionsListener {
     private MediaPlayer mediaPlayer;
     private DesignView designView;
     private MediaEndListener mediaEndListener;
-    private MetadataListener metadataListener;
     private int volumeValue = 50;
     ListProperty<Audio> listProperty = new SimpleListProperty<>();
     private double rate = 1;
@@ -38,7 +37,6 @@ public class Controller implements ViewActionsListener {
         designView = new DesignView(this);
         mPlaylist = new PlayList();
         mediaEndListener = new MediaEndListener();
-        metadataListener = new MetadataListener(designView);
 
         designView.getPlaylist().itemsProperty().bind(listProperty);
         assignMediaToPlayer();
@@ -357,11 +355,76 @@ public class Controller implements ViewActionsListener {
         }
         mPlaylist.setPlaying(true);
         mediaPlayer.setOnEndOfMedia(mediaEndListener);
-        designView.getDurationBar().setValue(0);
+
         mediaPlayer.play();
+        designView.getDurationBar().setValue(0);
         mediaPlayer.setVolume(volumeValue / 100.0);
-        //  metadataListener=new MetadataListener(designView);
-        mediaPlayer.getMedia().getMetadata().addListener(metadataListener);
+        new Thread(() -> {
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                while (true) {
+                    //System.out.println(mediaPlayer.getTotalDuration().toSeconds() * 1000) ;
+                    if(mediaPlayer.getStatus()!= MediaPlayer.Status.PAUSED){
+                        Thread.sleep( (long)((mediaPlayer.getTotalDuration().toMillis() ) / 100));
+                        Platform.runLater(() -> {
+                                designView.getDurationBar().setValue(designView.getDurationBar().getValue() + 1);
+                                designView.setDuration((int)mediaPlayer.getCurrentTime().toMillis());
+                            }
+                    );
+                    }
+                    // System.out.println(designView.getDurationBar().getValue());
+                }
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }).start();
+
+
+        mediaPlayer.setOnReady(new Runnable() {
+
+            @Override
+            public void run() {
+                for (Map.Entry<String, Object> entry : mediaPlayer.getMedia().getMetadata().entrySet()){
+
+                }
+
+                designView.setFullDurationString((int) mediaPlayer.getMedia().getDuration().toMillis());
+                // designView.setNowPlayingAlbumName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
+                //designView.setNowPlayingArtistName(mPlaylist.getCurrentlyPlaying().getAlbum());
+                //designView.setNowPlayingSongName(new Label(mPlaylist.getCurrentlyPlaying().getAlbum()));
+                //if (mPlaylist.getCurrentlyPlaying().getAlbumCover() != null)
+                //  designView.setAlbumPic(new ImageView(mPlaylist.getCurrentlyPlaying().getAlbumCover()));
+            }
+        });
+
+        new Thread(() -> {
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //System.out.println((String) mediaPlayer.getMedia().getMetadata().get("artist"));
+            Platform.runLater(() ->{
+                        designView.setNowPlayingArtistName((String)mPlaylist.getCurrentlyPlaying().getArtist() );
+                        designView.setNowPlayingAlbumName((String) mPlaylist.getCurrentlyPlaying().getAlbum());
+                        designView.setNowPlayingSongName(mPlaylist.getCurrentlyPlaying().getTitle());
+                        designView.setPicPane(mPlaylist.getCurrentlyPlaying().getAlbumCover());
+                    }
+            );
+
+
+        }).start();
 
 
     }
@@ -376,28 +439,7 @@ public class Controller implements ViewActionsListener {
         }
     }
 
-    class MetadataListener implements MapChangeListener<String, Object> {
-        DesignView designView;
 
-        public MetadataListener(DesignView designView) {
-            this.designView = designView;
-        }
-
-        @Override
-        public void onChanged(Change<? extends String, ?> change) {
-            if (change.getKey().equals("album")) {
-                designView.setNowPlayingAlbumName((change.getValueAdded().toString()));
-
-            } else if (change.getKey().equals("artist")) {
-                designView.setNowPlayingArtistName((change.getValueAdded().toString()));
-            } else if (change.getKey().equals("title")) {
-                designView.setNowPlayingSongName(change.getValueAdded().toString());
-            } else if (change.getKey().equals("image")) {
-                designView.setAlbumPic(((Image) change.getValueAdded()));
-
-            }
-        }
-    }
 
 
 }
